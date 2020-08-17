@@ -11,3 +11,12 @@ Using a `Retinanet` to detect `cats & dogs`.
 - [ ] Finsh [Retinanet Project](https://github.com/benihime91/pytorch_retinanet) first.
 - [ ] Train the Network.
 - [ ] Create WebApp using `StreamLit`.
+
+## Exploratory Data Analysis:
+![cat_breeds](nbs/Ims/cat_breeds.png)
+![cat_breeds](nbs/Ims/dog_breeds.png)  
+
+>**Example images from the Dataset:**  
+
+![example_1](nbs/Ims/example.png)
+![example_1](nbs/Ims/example_2.png)
