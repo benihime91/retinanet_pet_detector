@@ -1,7 +1,7 @@
 # retinanet_pet_detector
 Using a `Retinanet` to detect `cats & dogs`.
 
-> Create a `PetDetector` which can detect the `faces` of cats & dogs in Images using my [Implementation of Retinanet](https://github.com/benihime91/pytorch_retinanet).
+Create a `PetDetector` which can detect the `faces` of cats & dogs in Images using my implementation of [Retinanet](https://github.com/benihime91/pytorch_retinanet).
 
 ## Dataset used :
 `The Oxford-IIIT Pet Dataset` which can be found here [dataset](https://www.robots.ox.ac.uk/~vgg/data/pets/)
@@ -64,19 +64,13 @@ IoU metric: bbox
  Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.642
 ```
 - **Training Logs:**
+
+  <img src="pets_logs/pets_total_loss.png" width="400" height="400" />
+  <img src="pets_logs/pets_classification_loss.png" width="400" height="400" />
+  <img src="pets_logs/pets_regression_loss.png" width="400" height="400" />
+  <img src="pets_logs/pets_valid_mAP.png" width="400" height="400" />
   
-  ![total_loss](pets_logs/pets_total_loss.png)
-
-  ![classification_loss](pets_logs/pets_classification_loss.png)
-
-  ![regression_loss](pets_logs/pets_regression_loss.png)
-
-  ![coco](pets_logs/pets_valid_mAP.png)
-
-  ![learning_rate](pets_logs/pets_learning_rate.png)
-
-- **Results:**
-  
+<<<<<<< HEAD
   ![res_1](pets_logs/res_1.png)
 
   ![res_2](pets_logs/res_2.png)
@@ -84,3 +78,10 @@ IoU metric: bbox
   ![res_3](pets_logs/res_3.png)
 
   ![res_4](pets_logs/res_4.png)
+=======
+- **Results:**
+ 
+  <img src="pets_logs/res_2.png" width="500" height="500" />
+  <img src="pets_logs/res_3.png" width="500" height="500" />
+  <img src="pets_logs/res_4.png" width="500" height="500" />
+>>>>>>> 03f1a9762ca380c2e67ab734c161ce967867cb02
