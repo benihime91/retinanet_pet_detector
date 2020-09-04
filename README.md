@@ -8,8 +8,8 @@ Using a `Retinanet` to detect `cats & dogs`.
 
 ## TODO: 
 - [x] Parse the data and convert it to a managable format ex: CSV.
-- [ ] Finsh [Retinanet Project](https://github.com/benihime91/pytorch_retinanet) first.
-- [ ] Train the Network.
+- [x] Finsh [Retinanet Project](https://github.com/benihime91/pytorch_retinanet) first.
+- [x] Train the Network.
 - [ ] Create WebApp using `StreamLit`.
 
 ## Exploratory Data Analysis:
