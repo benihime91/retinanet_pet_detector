@@ -40,17 +40,14 @@ IoU metric: bbox
 ```
 - **Training Logs:**
 
-  <img src="pets_logs/pets_total_loss.png" width="400" height="400" />
-  <img src="pets_logs/pets_classification_loss.png" width="400" height="400" />
-  <img src="pets_logs/pets_regression_loss.png" width="400" height="400" />
-  <img src="pets_logs/pets_valid_mAP.png" width="400" height="400" />
+  <img src="pets_logs/pets_total_loss.png" width="500" height="500" />
+  <img src="pets_logs/pets_classification_loss.png" width="500" height="500" />
+  <img src="pets_logs/pets_regression_loss.png" width="500" height="500" />
+  <img src="pets_logs/pets_valid_mAP.png" width="500" height="500" />
   
 - **Results:**
-  
-  ![res_1](pets_logs/res_1.png)
-  
-  ![res_2](pets_logs/res_2.png)
-
-  ![res_3](pets_logs/res_3.png)
-
-  ![res_4](pets_logs/res_4.png)
+ 
+  <img src="pets_logs/res_1.png" width="500" height="500" />
+  <img src="pets_logs/res_2.png" width="500" height="500" />
+  <img src="pets_logs/res_3.png" width="500" height="500" />
+  <img src="pets_logs/res_4.png" width="500" height="500" />
