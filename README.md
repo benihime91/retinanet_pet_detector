@@ -41,19 +41,15 @@ IoU metric: bbox
 - **Training Logs:**
   
   ![total_loss](pets_logs/pets_total_loss.png)
-
   ![classification_loss](pets_logs/pets_classification_loss.png)
-
   ![regression_loss](pets_logs/pets_regression_loss.png)
-
   ![coco](pets_logs/pets_valid_mAP.png)
-
   ![learning_rate](pets_logs/pets_learning_rate.png)
 
 - **Results:**
   
   ![res_1](pets_logs/res_1.png)
-xw
+  
   ![res_2](pets_logs/res_2.png)
 
   ![res_3](pets_logs/res_3.png)
