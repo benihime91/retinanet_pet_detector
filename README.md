@@ -22,7 +22,7 @@ Using a `Retinanet` to detect `cats & dogs`.
 ![example_1](nbs/Ims/example_2.png)
 
 ## Results:
-- COCO API results on hold-out test dataset:
+- **COCO API results on hold-out test dataset:**
 ```bash
 IoU metric: bbox
  Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.594
@@ -37,7 +37,25 @@ IoU metric: bbox
  Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
  Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.800
  Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.642
---------------------------------------------------------------------------------
 ```
-- Training Logs:
+- **Training Logs:**
+  
+  ![total_loss](pets_logs/pets_total_loss.png)
 
+  ![classification_loss](pets_logs/pets_classification_loss.png)
+
+  ![regression_loss](pets_logs/pets_regression_loss.png)
+
+  ![coco](pets_logs/pets_valid_mAP.png)
+
+  ![learning_rate](pets_logs/pets_learning_rate.png)
+
+- **Results:**
+  
+  ![res_1](pets_logs/res_1.png)
+xw
+  ![res_2](pets_logs/res_2.png)
+
+  ![res_3](pets_logs/res_3.png)
+
+  ![res_4](pets_logs/res_4.png)
