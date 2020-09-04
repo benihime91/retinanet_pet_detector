@@ -12,6 +12,31 @@ Using a `Retinanet` to detect `cats & dogs`.
 - [x] Train the Network.
 - [ ] Create WebApp using `StreamLit`.
 
+## Inference on Single Image:
+```bash
+python inference.py --image "/Users/ayushman/Desktop/Datasets/oxford-iiit-pet/images/great_pyrenees_19.jpg" --fname res_test.png
+```
+**Flags**:
+```bash
+python inference.py --help
+usage: inference.py [-h] [--url URL] --image IMAGE [--score_thres SCORE_THRES]
+                    [--iou_thres IOU_THRES] [--save SAVE] [--show SHOW]
+                    [--save_dir SAVE_DIR] [--fname FNAME]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --url URL             url to the pretrained weights
+  --image IMAGE         path to the input image
+  --score_thres SCORE_THRES
+                        score_threshold to threshold detections
+  --iou_thres IOU_THRES
+                        iou_threshold for bounding boxes
+  --save SAVE           wether to save the ouput predictions
+  --show SHOW           wether to display the output predicitons
+  --save_dir SAVE_DIR   directory where to save the output predictions
+  --fname FNAME         name of the output prediction file
+```
+
 ## Exploratory Data Analysis:
 ![cat_breeds](nbs/Ims/cat_breeds.png)
 ![cat_breeds](nbs/Ims/dog_breeds.png)  
@@ -53,7 +78,7 @@ IoU metric: bbox
 - **Results:**
   
   ![res_1](pets_logs/res_1.png)
-xw
+
   ![res_2](pets_logs/res_2.png)
 
   ![res_3](pets_logs/res_3.png)
