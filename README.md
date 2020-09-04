@@ -70,18 +70,8 @@ IoU metric: bbox
   <img src="pets_logs/pets_regression_loss.png" width="400" height="400" />
   <img src="pets_logs/pets_valid_mAP.png" width="400" height="400" />
   
-<<<<<<< HEAD
-  ![res_1](pets_logs/res_1.png)
-
-  ![res_2](pets_logs/res_2.png)
-
-  ![res_3](pets_logs/res_3.png)
-
-  ![res_4](pets_logs/res_4.png)
-=======
 - **Results:**
  
   <img src="pets_logs/res_2.png" width="500" height="500" />
   <img src="pets_logs/res_3.png" width="500" height="500" />
   <img src="pets_logs/res_4.png" width="500" height="500" />
->>>>>>> 03f1a9762ca380c2e67ab734c161ce967867cb02
