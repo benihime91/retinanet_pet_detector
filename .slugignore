@@ -1,6 +1,4 @@
 *.ipynb
-pets_logs/
-/pets_logs/
 __pycache__/
 *.py[cod]
 *$py.class
@@ -13,3 +11,24 @@ env.bak/
 venv.bak/
 .DS_Store
 .vscode
+
+# Ignore this files for heroku
+pets_logs/
+/pets_logs/
+nbs/
+nbs/
+
+/pytorch_retinanet/nbs/
+pytorch_retinanet/nbs/
+app/pytorch_retinanet/nbs
+/app/pytorch_retinanet/nbs
+
+app/output/res.png
+/app/output/res.png
+/app/output/res_test.png
+app/output/res_test.png
+
+app/requirements.txt
+/app/requirements.txt
+pytorch_retinanet/requirements.txt
+/pytorch_retinanet/requirements.txt
