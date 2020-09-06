@@ -1,10 +1,6 @@
 from typing import *
-
-import albumentations as A
-import cv2
 import numpy as np
 import torch
-from albumentations.pytorch import ToTensorV2
 from PIL import Image
 from torchvision.ops.boxes import batched_nms
 
@@ -67,11 +63,6 @@ def get_model(url=url):
     return model
 
 
-tfms = A.Compose(
-    [A.ToFloat(max_value=255.0, always_apply=True), ToTensorV2(always_apply=True),]
-)
-
-
 @torch.no_grad()
 def get_preds(
     model: torch.nn.Module,
@@ -84,10 +75,12 @@ def get_preds(
 
     model.to(device)
     # Load the imag
-    img = cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
+    img = Image.open(path).convert("RGB")
+    img = np.array(img)
 
     # Process the image
-    img = tfms(image=img)["image"]
+    img = img / 255.0
+    img = torch.tensor(img)
     img = img.to(device)
 
     # Generate predictions
@@ -133,8 +126,11 @@ def detection_api(
     bb, cls, sc = get_preds(model, img, score_thres, iou_thres)
     print(f"[INFO] {len(bb)} bounding_boxes detected ....")
     print("[INFO] creating bbox on the image .... ")
+
     # Draw bounding boxes
-    img = cv2.cvtColor(cv2.imread(img), cv2.COLOR_BGR2RGB)
+    img = Image.open(img).convert("RGB")
+    img = np.array(img)
+
     viz.draw_bboxes(
         img,
         boxes=bb,
@@ -156,7 +152,8 @@ def get_predictions_v2(
 ):
     "get predictions for the uploaded image"
 
-    tensor_image = tfms(image=uploaded_image)["image"]
+    tensor_image = uploaded_image / 255.0
+    tensor_image = torch.tensor(tensor_image)
     # Generate predicitons
     model.eval()
     pred = model([tensor_image])
@@ -177,39 +174,3 @@ def get_predictions_v2(
     scores = list(scores[keep_idxs].cpu().numpy())
 
     return boxes, clas, scores
-
-
-#### FUNCTIONS taken from : http://193.51.245.4/tutorials/convert_a_matplotlib_figure #####################
-def fig2data(fig):
-    """
-    @brief Convert a Matplotlib figure to a 4D numpy array with RGBA channels and return it
-    @param fig a matplotlib figure
-    @return a numpy 3D array of RGBA values
-    """
-    # draw the renderer
-    fig.canvas.draw()
-
-    # Get the RGBA buffer from the figure
-    w, h = fig.canvas.get_width_height()
-    buf = np.fromstring(fig.canvas.tostring_argb(), dtype=np.uint8)
-    buf.shape = (w, h, 4)
-
-    # canvas.tostring_argb give pixmap in ARGB mode. Roll the ALPHA channel to have it in RGBA mode
-    buf = np.roll(buf, 3, axis=2)
-    return buf
-
-
-def fig2img(fig):
-    """
-    @brief Convert a Matplotlib figure to a PIL Image in RGBA format and return it
-    @param fig a matplotlib figure
-    @return a Python Imaging Library ( PIL ) image
-    """
-    # put the figure pixmap into a numpy array
-    buf = fig2data(fig)
-    w, h, d = buf.shape
-    res = Image.frombytes("RGBA", (w, h), buf.tostring())
-    return res
-
-
-###############################################################################################################

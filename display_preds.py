@@ -1,20 +1,15 @@
 import os
 from typing import Dict, List, Optional, Tuple, Union
 
-import cv2
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
 
 from pytorch_retinanet.src.utils.general_utils import ifnone
 
 # Turn interactive plotting off
 plt.ioff()
-
-
-def load_image(image_path: str):
-    image = cv2.cvtColor(cv2.imread(image_path), cv2.COLOR_BGR2RGB)
-    return image
 
 
 class Visualizer:
@@ -24,9 +19,6 @@ class Visualizer:
             [[1, 0, 1], [0, 0, 1], [0, 1, 1], [0, 1, 0], [1, 1, 0], [1, 0, 0]],
             dtype=np.float32,
         )
-
-    def load_image(self, path: str):
-        return load_image(path)
 
     def _get_color(self, c, x, max_val):
         ratio = float(x) / max_val * 5
@@ -54,8 +46,8 @@ class Visualizer:
     ):
 
         if isinstance(img, str):
-            img = load_image(img)
-
+            img = Image.open(img).convert("RGB")
+            img = np.array(img)
         # Get the width and height of the image
         width = img.shape[1]
         height = img.shape[0]
