@@ -40,7 +40,7 @@ To train from scratch check the nbs folder for the notebooks. There are two note
 
 - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/gist/benihime91/3b25893e4b1cfc40528821cac471a0a1/main.ipynb?authuser=4#scrollTo=WWi2w3N7XPIi) [03_train.ipynb](nbs/main.ipynb). Train using same hyperparameters.
 
-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/gist/benihime91/02481b7f5c338fe835f4af6e9316d47e/04_template.ipynb?authuser=4) [04_template.ipynb](https://github.com/benihime91/retinanet_pet_detector/blob/master/nbs/04_template.ipynb). Template notebook train using different hyperparameters.
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/gist/benihime91/02481b7f5c338fe835f4af6e9316d47e/04_template.ipynb?authuser=4) [04_template.ipynb](https://github.com/benihime91/retinanet_pet_detector/blob/master/nbs/04_template.ipynb). Template notebook to train using different hyperparameters.
 
 ## **Inference on Single Image**:
 
