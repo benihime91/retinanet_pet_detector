@@ -1,15 +1,25 @@
 import argparse
 import warnings
 
-from utils import detection_api, get_model, url
+import yaml
+
+from utils import detection_api, get_model
+
+
+def load_yaml_config(path):
+    "load a yaml config"
+    with open(path, "r") as f:
+        conf_dict = yaml.safe_load(f)
+    conf_dict = argparse.Namespace(**conf_dict)
+    return conf_dict
 
 
 def main(args):
     warnings.filterwarnings("ignore")
-
     # grab the model
     print("[INFO] Serializing model ....")
-    model = get_model(url=args.url)
+    conf_dict = load_yaml_config(args.config)
+    model = get_model(conf_dict)
 
     # grab the path to the Image file
     fname = args.image
@@ -30,11 +40,11 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--url",
+        "--config",
         type=str,
-        default=url,
+        default="config.yaml",
         required=False,
-        help="url to the pretrained weights",
+        help="path to the config file",
     )
     parser.add_argument(
         "--image", type=str, required=True, help="path to the input image"

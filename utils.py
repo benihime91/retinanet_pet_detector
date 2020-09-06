@@ -1,16 +1,15 @@
+import argparse
 from typing import *
 
-import albumentations as A
 import numpy as np
 import torch
-from albumentations.pytorch import ToTensorV2
 from PIL import Image
-from torchvision.ops.boxes import batched_nms
 
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 from display_preds import Visualizer
 from pytorch_retinanet.src.models import Retinanet
-
-url = "https://github.com/benihime91/retinanet_pet_detector/releases/download/v0.0.1/retinanet34-2020-08-04-ffdde352.pth"
+from torchvision.ops.boxes import batched_nms
 
 label_dict = {
     0: "abyssinian",
@@ -58,13 +57,18 @@ viz = Visualizer(class_names=label_dict)
 transforms = A.Compose([A.ToFloat(), ToTensorV2()])
 
 
-def get_model(url=url):
+def get_model(args: argparse.Namespace):
     "returns a pre-trained retinanet model"
-    model = Retinanet(num_classes=37, backbone_kind="resnet34")
-    state_dict = state_dict = torch.hub.load_state_dict_from_url(
-        url, map_location="cpu"
-    )
-    model.load_state_dict(state_dict)
+    model = Retinanet(num_classes=args.num_classes,
+                      backbone_kind=args.model_backbone)
+    # if load model from url
+    if args.load_from_url:
+        state_dict = state_dict = torch.hub.load_state_dict_from_url(
+            args.url, map_location="cpu")
+        model.load_state_dict(state_dict)
+    else:
+        # else load model from given path
+        model.load_state_dict(torch.load(args.state_dict_path))
     return model
 
 
