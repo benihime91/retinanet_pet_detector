@@ -1,3 +1,0 @@
-[submodule "pytorch_retinanet"]
-	path = pytorch_retinanet
-	url = https://github.com/benihime91/pytorch_retinanet.git
