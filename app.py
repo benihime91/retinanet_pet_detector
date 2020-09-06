@@ -23,9 +23,8 @@ viz = Visualizer(label_dict)
 @st.cache(allow_output_mutation=True)
 def load_model(args: argparse.Namespace):
     " loads in the pre-trained RetinaNet Model "
-    with st.slider("Serializing Model ..."):
-        model = get_model(args)
-        model.to(device=DEVICE)
+    model = get_model(args)
+    model.to(device=DEVICE)
     return model
 
 
@@ -88,7 +87,6 @@ def start_app() -> None:
 def main(args: argparse.Namespace):
     start_app()
     image = load_image()
-    model = get_model(args)
     st.markdown("> Detection Parameters")
     score_threshold = st.slider(
         label="score threshold for detections (Detections with score < score_threshold are discarded)",
@@ -107,7 +105,8 @@ def main(args: argparse.Namespace):
     # If image is Upladed make predictions when button is clicked
     if image is not None:
         if st.button("Generate predictions"):
-
+            with st.spinner("Loading model ... "):
+                model = get_model(args)
             with st.spinner("Generating results ... "):
                 # Get instance predictions for the uploaded Image
                 bb, lb, sc = get_preds(
