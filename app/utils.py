@@ -1,0 +1,215 @@
+from typing import *
+
+import albumentations as A
+import cv2
+import numpy as np
+import torch
+from albumentations.pytorch import ToTensorV2
+from PIL import Image
+from torchvision.ops.boxes import batched_nms
+
+from display_preds import Visualizer
+from pytorch_retinanet.src.models import Retinanet
+
+url = "https://github.com/benihime91/retinanet_pet_detector/releases/download/v0.0.1/retinanet34-2020-08-04-ffdde352.pth"
+
+label_dict = {
+    0: "abyssinian",
+    1: "american_bulldog",
+    2: "american_pit_bull_terrier",
+    3: "basset_hound",
+    4: "beagle",
+    5: "bengal",
+    6: "birman",
+    7: "bombay",
+    8: "boxer",
+    9: "british_shorthair",
+    10: "chihuahua",
+    11: "egyptian_mau",
+    12: "english_cocker_spaniel",
+    13: "english_setter",
+    14: "german_shorthaired",
+    15: "great_pyrenees",
+    16: "havanese",
+    17: "japanese_chin",
+    18: "keeshond",
+    19: "leonberger",
+    20: "maine_coon",
+    21: "miniature_pinscher",
+    22: "newfoundland",
+    23: "persian",
+    24: "pomeranian",
+    25: "pug",
+    26: "ragdoll",
+    27: "russian_blue",
+    28: "saint_bernard",
+    29: "samoyed",
+    30: "scottish_terrier",
+    31: "shiba_inu",
+    32: "siamese",
+    33: "sphynx",
+    34: "staffordshire_bull_terrier",
+    35: "wheaten_terrier",
+    36: "yorkshire_terrier",
+}
+
+# Instantiate the visualizer
+viz = Visualizer(class_names=label_dict)
+
+
+def get_model(url=url):
+    "returns a pre-trained retinanet model"
+    model = Retinanet(num_classes=37, backbone_kind="resnet34")
+    state_dict = state_dict = torch.hub.load_state_dict_from_url(
+        url, map_location="cpu"
+    )
+    model.load_state_dict(state_dict)
+    return model
+
+
+tfms = A.Compose(
+    [A.ToFloat(max_value=255.0, always_apply=True), ToTensorV2(always_apply=True),]
+)
+
+
+@torch.no_grad()
+def get_preds(
+    model: torch.nn.Module,
+    path: str,
+    threshold: float,
+    iou_threshold: float,
+    device: Union[torch.device, str] = "cpu",
+) -> Tuple[List, List, List]:
+    "Get predictions on image"
+
+    model.to(device)
+    # Load the imag
+    img = cv2.cvtColor(cv2.imread(path), cv2.COLOR_BGR2RGB)
+
+    # Process the image
+    img = tfms(image=img)["image"]
+    img = img.to(device)
+
+    # Generate predictions
+    model.eval()
+    pred = model([img])
+
+    # Gather the bbox, scores & labels from the preds
+    pred_boxes = pred[0]["boxes"]  # Bounding boxes
+    pred_class = pred[0]["labels"]  # predicted class labels
+    pred_score = pred[0]["scores"]  # predicted scores
+
+    # Get list of index with score greater than threshold.
+    mask = pred_score > threshold
+
+    # Filter predictions
+    boxes = pred_boxes[mask]
+    clas = pred_class[mask]
+    scores = pred_score[mask]
+
+    # do NMS
+    keep_idxs = batched_nms(boxes, scores, clas, iou_threshold)
+    boxes = list(boxes[keep_idxs].cpu().numpy())
+    clas = list(clas[keep_idxs].cpu().numpy())
+    scores = list(scores[keep_idxs].cpu().numpy())
+
+    return boxes, clas, scores
+
+
+def detection_api(
+    model: torch.nn.Module,
+    img: str,
+    score_thres: float = 0.5,
+    iou_thres: float = 0.2,
+    save: bool = True,
+    show: bool = False,
+    fname: str = "res.png",
+    save_dir: str = "outputs",
+):
+    "Draw bbox predictions on given image"
+
+    # Extract the predicitons for given Image
+    print("[INFO] Generating Predictions ..... ")
+    bb, cls, sc = get_preds(model, img, score_thres, iou_thres)
+    print(f"[INFO] {len(bb)} bounding_boxes detected ....")
+    print("[INFO] creating bbox on the image .... ")
+    # Draw bounding boxes
+    img = cv2.cvtColor(cv2.imread(img), cv2.COLOR_BGR2RGB)
+    viz.draw_bboxes(
+        img,
+        boxes=bb,
+        classes=cls,
+        scores=sc,
+        save=save,
+        show=show,
+        save_dir=save_dir,
+        fname=fname,
+    )
+
+
+@torch.no_grad()
+def get_predictions_v2(
+    model: torch.nn.Module,
+    uploaded_image: np.array,
+    score_threshold: float,
+    iou_threshold: float,
+):
+    "get predictions for the uploaded image"
+
+    tensor_image = tfms(image=uploaded_image)["image"]
+    # Generate predicitons
+    model.eval()
+    pred = model([tensor_image])
+    # Gather the bbox, scores & labels from the preds
+    pred_boxes = pred[0]["boxes"]  # Bounding boxes
+    pred_class = pred[0]["labels"]  # predicted class labels
+    pred_score = pred[0]["scores"]  # predicted scores
+    # Get list of index with score greater than threshold.
+    mask = pred_score > score_threshold
+    # Filter predictions
+    boxes = pred_boxes[mask]
+    clas = pred_class[mask]
+    scores = pred_score[mask]
+    # do NMS
+    keep_idxs = batched_nms(boxes, scores, clas, iou_threshold)
+    boxes = list(boxes[keep_idxs].cpu().numpy())
+    clas = list(clas[keep_idxs].cpu().numpy())
+    scores = list(scores[keep_idxs].cpu().numpy())
+
+    return boxes, clas, scores
+
+
+#### FUNCTIONS taken from : http://193.51.245.4/tutorials/convert_a_matplotlib_figure #####################
+def fig2data(fig):
+    """
+    @brief Convert a Matplotlib figure to a 4D numpy array with RGBA channels and return it
+    @param fig a matplotlib figure
+    @return a numpy 3D array of RGBA values
+    """
+    # draw the renderer
+    fig.canvas.draw()
+
+    # Get the RGBA buffer from the figure
+    w, h = fig.canvas.get_width_height()
+    buf = np.fromstring(fig.canvas.tostring_argb(), dtype=np.uint8)
+    buf.shape = (w, h, 4)
+
+    # canvas.tostring_argb give pixmap in ARGB mode. Roll the ALPHA channel to have it in RGBA mode
+    buf = np.roll(buf, 3, axis=2)
+    return buf
+
+
+def fig2img(fig):
+    """
+    @brief Convert a Matplotlib figure to a PIL Image in RGBA format and return it
+    @param fig a matplotlib figure
+    @return a Python Imaging Library ( PIL ) image
+    """
+    # put the figure pixmap into a numpy array
+    buf = fig2data(fig)
+    w, h, d = buf.shape
+    res = Image.frombytes("RGBA", (w, h), buf.tostring())
+    return res
+
+
+###############################################################################################################
