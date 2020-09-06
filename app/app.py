@@ -64,7 +64,7 @@ def start_app() -> None:
         "Add an image of a pet (cat or dog) and the app will draw the dounding box where it detects the objects:"
     )
     st.image(
-        Image.open("output/res_1.png"),
+        Image.open("app/output/res_1.png"),
         caption="Example of model being on the Image of a dog [breed: leonburger].",
         use_column_width=True,
     )
@@ -75,7 +75,7 @@ def start_app() -> None:
     )
     st.markdown("**To be more precise the model has been trained on these breeds:**")
     st.image(
-        Image.open("output/breed_count.jpg"),
+        Image.open("app/output/breed_count.jpg"),
         caption="Train Data Statistics ",
         use_column_width=True,
     )
