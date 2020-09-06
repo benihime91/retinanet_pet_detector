@@ -50,6 +50,7 @@ class Visualizer:
         show: bool = True,
         fname: str = "res.png",
         color=None,
+        return_fig: bool = False,
     ):
 
         if isinstance(img, str):
@@ -60,7 +61,9 @@ class Visualizer:
         height = img.shape[0]
 
         # Create a figure and plot the image
-        sz = ifnone(figsize, (15, 15))
+        sz = ifnone(
+            figsize, (15, 15)
+        )  # NB: use smaller size beacuse matplotlib takes long time to render large images
         fig, a = plt.subplots(1, 1, figsize=sz)
         a.imshow(img)
 
@@ -136,3 +139,6 @@ class Visualizer:
             )
             plt.close(fig)
             print(f"[INFO] results saved to {os.path.join(save_dir, fname)}")
+
+        if return_fig:
+            return fig

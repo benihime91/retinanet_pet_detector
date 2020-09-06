@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 import torch
 from albumentations.pytorch import ToTensorV2
+from PIL import Image
 from torchvision.ops.boxes import batched_nms
 
 from display_preds import Visualizer
@@ -144,3 +145,71 @@ def detection_api(
         save_dir=save_dir,
         fname=fname,
     )
+
+
+@torch.no_grad()
+def get_predictions_v2(
+    model: torch.nn.Module,
+    uploaded_image: np.array,
+    score_threshold: float,
+    iou_threshold: float,
+):
+    "get predictions for the uploaded image"
+
+    tensor_image = tfms(image=uploaded_image)["image"]
+    # Generate predicitons
+    model.eval()
+    pred = model([tensor_image])
+    # Gather the bbox, scores & labels from the preds
+    pred_boxes = pred[0]["boxes"]  # Bounding boxes
+    pred_class = pred[0]["labels"]  # predicted class labels
+    pred_score = pred[0]["scores"]  # predicted scores
+    # Get list of index with score greater than threshold.
+    mask = pred_score > score_threshold
+    # Filter predictions
+    boxes = pred_boxes[mask]
+    clas = pred_class[mask]
+    scores = pred_score[mask]
+    # do NMS
+    keep_idxs = batched_nms(boxes, scores, clas, iou_threshold)
+    boxes = list(boxes[keep_idxs].cpu().numpy())
+    clas = list(clas[keep_idxs].cpu().numpy())
+    scores = list(scores[keep_idxs].cpu().numpy())
+
+    return boxes, clas, scores
+
+
+#### FUNCTIONS taken from : http://193.51.245.4/tutorials/convert_a_matplotlib_figure #####################
+def fig2data(fig):
+    """
+    @brief Convert a Matplotlib figure to a 4D numpy array with RGBA channels and return it
+    @param fig a matplotlib figure
+    @return a numpy 3D array of RGBA values
+    """
+    # draw the renderer
+    fig.canvas.draw()
+
+    # Get the RGBA buffer from the figure
+    w, h = fig.canvas.get_width_height()
+    buf = np.fromstring(fig.canvas.tostring_argb(), dtype=np.uint8)
+    buf.shape = (w, h, 4)
+
+    # canvas.tostring_argb give pixmap in ARGB mode. Roll the ALPHA channel to have it in RGBA mode
+    buf = np.roll(buf, 3, axis=2)
+    return buf
+
+
+def fig2img(fig):
+    """
+    @brief Convert a Matplotlib figure to a PIL Image in RGBA format and return it
+    @param fig a matplotlib figure
+    @return a Python Imaging Library ( PIL ) image
+    """
+    # put the figure pixmap into a numpy array
+    buf = fig2data(fig)
+    w, h, d = buf.shape
+    res = Image.frombytes("RGBA", (w, h), buf.tostring())
+    return res
+
+
+###############################################################################################################
