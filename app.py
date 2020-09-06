@@ -1,3 +1,4 @@
+import argparse
 import warnings
 from typing import *
 
@@ -6,6 +7,7 @@ import streamlit as st
 from PIL import Image
 
 from display_preds import Visualizer
+from inference import load_yaml_config
 from utils import get_model
 from utils import get_predictions_v2 as get_preds
 from utils import label_dict
@@ -19,10 +21,10 @@ viz = Visualizer(label_dict)
 
 # load model with @st.cache so it doesn't take a long time each time
 @st.cache(allow_output_mutation=True)
-def load_model():
+def load_model(args: argparse.Namespace):
     " loads in the pre-trained RetinaNet Model "
     with st.slider("Serializing Model ..."):
-        model = get_model()
+        model = get_model(args)
         model.to(device=DEVICE)
     return model
 
@@ -73,7 +75,8 @@ def start_app() -> None:
         "**Note:** The model has been trained on pets breeds given in the [The Oxford-IIIT Pet Dataset](https://www.robots.ox.ac.uk/~vgg/data/pets/)"
         " and therefore will only with those kind of images."
     )
-    st.markdown("**To be more precise the model has been trained on these breeds:**")
+    st.markdown(
+        "**To be more precise the model has been trained on these breeds:**")
     st.image(
         Image.open("app_images/breed_count.jpg"),
         caption="Train Data Statistics ",
@@ -82,10 +85,10 @@ def start_app() -> None:
     st.markdown("[credits](https://www.robots.ox.ac.uk/~vgg/data/pets/)")
 
 
-def main():
+def main(args: argparse.Namespace):
     start_app()
     image = load_image()
-    model = get_model()
+    model = get_model(args)
     st.markdown("> Detection Parameters")
     score_threshold = st.slider(
         label="score threshold for detections (Detections with score < score_threshold are discarded)",
@@ -105,9 +108,10 @@ def main():
     if image is not None:
         if st.button("Generate predictions"):
 
-            with st.spinner("Generating bounding results ... "):
+            with st.spinner("Generating results ... "):
                 # Get instance predictions for the uploaded Image
-                bb, lb, sc = get_preds(model, image, score_threshold, iou_threshold,)
+                bb, lb, sc = get_preds(
+                    model, image, score_threshold, iou_threshold,)
 
             st.markdown("## Results")
             st.markdown(
@@ -122,4 +126,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # load in the args using the config file
+    args = load_yaml_config(path='config.yaml')
+    # run the app
+    main(args)
