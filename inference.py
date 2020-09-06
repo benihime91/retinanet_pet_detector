@@ -1,5 +1,6 @@
 import argparse
 import warnings
+
 from utils import detection_api, get_model, url
 
 
@@ -83,4 +84,3 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     main(args)
-

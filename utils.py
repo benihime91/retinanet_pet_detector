@@ -1,6 +1,9 @@
 from typing import *
+
+import albumentations as A
 import numpy as np
 import torch
+from albumentations.pytorch import ToTensorV2
 from PIL import Image
 from torchvision.ops.boxes import batched_nms
 
@@ -52,6 +55,8 @@ label_dict = {
 # Instantiate the visualizer
 viz = Visualizer(class_names=label_dict)
 
+transforms = A.Compose([A.ToFloat(), ToTensorV2()])
+
 
 def get_model(url=url):
     "returns a pre-trained retinanet model"
@@ -79,9 +84,8 @@ def get_preds(
     img = np.array(img)
 
     # Process the image
-    img = img / 255.0
-    img = torch.tensor(img)
-    img = img.to(device)
+    img = transforms(image=img)["image"]
+    img.to(device)
 
     # Generate predictions
     model.eval()
@@ -118,7 +122,7 @@ def detection_api(
     show: bool = False,
     fname: str = "res.png",
     save_dir: str = "outputs",
-):
+) -> None:
     "Draw bbox predictions on given image"
 
     # Extract the predicitons for given Image
@@ -149,11 +153,11 @@ def get_predictions_v2(
     uploaded_image: np.array,
     score_threshold: float,
     iou_threshold: float,
-):
+) -> Tuple[List, List, List]:
     "get predictions for the uploaded image"
+    # Convert Image to a tensor
+    tensor_image = transforms(image=uploaded_image)["image"]
 
-    tensor_image = uploaded_image / 255.0
-    tensor_image = torch.tensor(tensor_image)
     # Generate predicitons
     model.eval()
     pred = model([tensor_image])
