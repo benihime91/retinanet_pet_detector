@@ -33,6 +33,22 @@ Create a `PetDetector` which can detect the `faces` of cats & dogs in Images usi
   streamlit run app.py
   ```
 
+- #### Alternate method : (Using conda environment)
+
+  - download [anaconda](https://www.anaconda.com/products/individual) or [miniconda](https://docs.conda.io/en/latest/miniconda.html). `miniconda recommended`.
+
+  - setup environment using steps given below :
+
+    ```bash
+    git clone https://github.com/benihime91/retinanet_pet_detector.git
+    cd retinanet_pet_detector  
+    conda env create -f pets.yaml
+    conda activate pets
+    streamlit run app.py
+    ```
+
+  **NB: app might take a few moments to start up if loading for the first time.**
+
 ## **Train**:
 
 To train from scratch check the nbs folder for the notebooks. There are two notebooks to using:
