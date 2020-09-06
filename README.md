@@ -12,6 +12,9 @@ Create a `PetDetector` which can detect the `faces` of cats & dogs in Images usi
 - [x] Train the Network.
 - [ ] Create WebApp using `StreamLit`.
 
+## Train:
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/gist/benihime91/3b25893e4b1cfc40528821cac471a0a1/main.ipynb?authuser=4#scrollTo=WWi2w3N7XPIi) [main.ipynb](nbs/main.ipynb). Train RetinaNet on `The Oxford-IIIT Pet Dataset`.
+
 ## Inference on Single Image:
 ```bash
 python inference.py --image "/Users/ayushman/Desktop/Datasets/oxford-iiit-pet/images/great_pyrenees_19.jpg" --fname res_test.png
