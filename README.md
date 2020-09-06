@@ -77,15 +77,7 @@ IoU metric: bbox
  Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.800
  Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.642
 ```
-- **Training Logs:**
-
-  <img src="pets_logs/pets_total_loss.png" width="400" height="400" />
-  <img src="pets_logs/pets_classification_loss.png" width="400" height="400" />
-  <img src="pets_logs/pets_regression_loss.png" width="400" height="400" />
-  <img src="pets_logs/pets_valid_mAP.png" width="400" height="400" />
-  
 - **Results:**
- 
   <img src="pets_logs/res_2.png" width="500" height="500" />
   <img src="pets_logs/res_3.png" width="500" height="500" />
   <img src="pets_logs/res_4.png" width="500" height="500" />
