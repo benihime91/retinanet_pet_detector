@@ -12,14 +12,18 @@ venv.bak/
 .DS_Store
 .vscode
 
-# Ignore this files for heroku
 pets_logs/
+nbs/
+/nbs/
 /pets_logs/
-nbs/
-nbs/
+
+
 /pytorch_retinanet/nbs/
 pytorch_retinanet/nbs/
-pytorch_retinanet/requirements.txt
-/pytorch_retinanet/requirements.txt
+
 pytorch_retinanet/src/utils/eval_utils/
 /pytorch_retinanet/src/utils/eval_utils/
+
+pytorch_retinanet/requirements.txt
+/pytorch_retinanet/requirements.txt
+
