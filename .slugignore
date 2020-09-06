@@ -1,0 +1,15 @@
+*.ipynb
+pets_logs/
+/pets_logs/
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.DS_Store
+.vscode
