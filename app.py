@@ -3,9 +3,9 @@ import warnings
 from typing import *
 
 import numpy as np
-import streamlit as st
 from PIL import Image
 
+import streamlit as st
 from display_preds import Visualizer
 from inference import load_yaml_config
 from utils import get_model
@@ -30,7 +30,8 @@ def load_model(args: argparse.Namespace):
 
 # Loads in the user Input Image
 def load_image():
-    uploaded_image = st.file_uploader("Choose a png or jpg image", type=["jpg", "png", "jpeg"])
+    uploaded_image = st.file_uploader(
+        "Choose a png or jpg image", type=["jpg", "png", "jpeg"])
     if uploaded_image is not None:
         st.markdown("## Uploaded Image")
         # Make sure image is RGB
@@ -69,7 +70,8 @@ def start_app() -> None:
         "**Note:** The model has been trained on pets breeds given in the [The Oxford-IIIT Pet Dataset](https://www.robots.ox.ac.uk/~vgg/data/pets/)"
         " and therefore will only with those kind of images."
     )
-    st.markdown("**To be more precise the model has been trained on these breeds:**")
+    st.markdown(
+        "**To be more precise the model has been trained on these breeds:**")
     st.image(
         Image.open("app_images/breed_count.jpg"),
         caption="Train Data Statistics ",
@@ -90,14 +92,14 @@ def main(args: argparse.Namespace):
             label="score threshold for detections (Detections with score < score_threshold are discarded)",
             min_value=0.1,
             max_value=1.0,
-            value=0.6,
+            value=0.5,
         )
 
         nms_thres = st.slider(
             label="iou threshold for detection bounding boxes",
             min_value=0.1,
             max_value=1.0,
-            value=0.3,
+            value=0.5,
         )
 
         md = st.slider(
@@ -111,8 +113,9 @@ def main(args: argparse.Namespace):
             with st.spinner(
                 "Loading model ... It might take some time to download the model if using for the 1st time.."
             ):
-                
-                model = get_model(args, nms_thres=nms_thres, max_detections_per_images=md,)
+
+                model = get_model(args, nms_thres=nms_thres,
+                                  max_detections_per_images=md,)
 
             with st.spinner("Generating results ... "):
                 # Get instance predictions for the uploaded Image

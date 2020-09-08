@@ -1,16 +1,16 @@
 import argparse
 from typing import *
 
-import albumentations as A
 import numpy as np
 import torch
-from albumentations.pytorch import ToTensorV2
 from PIL import Image
 from torch import nn
-from torchvision.ops.boxes import batched_nms
 
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 from display_preds import Visualizer
 from pytorch_retinanet.src.models import Retinanet
+from torchvision.ops.boxes import batched_nms
 
 label_dict = {
     0: "abyssinian",
@@ -156,7 +156,6 @@ def detection_api(
 
 @torch.no_grad()
 def get_predictions_v2(model: nn.Module, image: np.array, thres: float) -> Tuple[List]:
-
     "get predictions for the uploaded image"
     # Convert Image to a tensor
     tensor_image = transforms(image=image)["image"]
@@ -169,7 +168,7 @@ def get_predictions_v2(model: nn.Module, image: np.array, thres: float) -> Tuple
     clas = pred[0]["labels"]  # predicted class labels
     score = pred[0]["scores"]  # predicted scores
 
-    # Fit predicitons with score threshold
+    # Fit predictions with score threshold
     detect_mask = score > thres
     box = box[detect_mask]
     clas = clas[detect_mask]
