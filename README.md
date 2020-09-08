@@ -39,9 +39,9 @@ Create a `PetDetector` which can detect the `faces` of cats & dogs in Images usi
 
 To train from scratch check the nbs folder for the notebooks. There are two notebooks to using:
 
-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/gist/benihime91/1a413db4b8ac33918d949ec5f57b51b3/03_train.ipynb?authuser=4) [03_train.ipynb](https://github.com/benihime91/retinanet_pet_detector/blob/master/nbs/03_train.ipynb). Train using same hyperparameters with `resnet18` backbone.
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/notebooks/03_train.ipynb) [03_train.ipynb](https://github.com/benihime91/retinanet_pet_detector/blob/master/notebooks/03_train.ipynb). Train using same hyperparameters with `resnet18` backbone.
 
-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/nbs/04_template.ipynb)[04_template.ipynb](https://github.com/benihime91/retinanet_pet_detector/blob/master/nbs/04_template.ipynb). Template notebook to train using different hyperparameters and different backbone.
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/notebooks/04_template.ipynb)[04_template.ipynb](https://github.com/benihime91/retinanet_pet_detector/blob/master/notebooks/04_template.ipynb). Template notebook to train using different hyperparameters and different backbone.
 
 ## **Inference on Single Image**:
 
