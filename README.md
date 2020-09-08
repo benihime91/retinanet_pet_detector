@@ -32,6 +32,7 @@ Create a `PetDetector` which can detect the `faces` of cats & dogs in Images usi
   ```bash
   streamlit run app.py
   ```
+
   > **NB: app might take a few moments to start up if loading for the first time.**
 
 ## **Train**:
@@ -109,4 +110,4 @@ Using inference.py automatically loads in these weights on a retinanet with `res
 
   **Results can be better with a bigger backbone.**
 
-- **Results:** ![](pets_logs/res_2.png) ![](pets_logs/res_3.png) ![](pets_logs/res_4.png)
+- **Results:** ![](images/res_2.png) ![](images/res_3.png) ![](images/res_4.png)
