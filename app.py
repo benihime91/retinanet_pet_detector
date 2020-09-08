@@ -92,14 +92,14 @@ def main(args: argparse.Namespace):
             label="score threshold for detections (Detections with score < score_threshold are discarded)",
             min_value=0.1,
             max_value=1.0,
-            value=0.5,
+            value=0.6,
         )
 
         nms_thres = st.slider(
             label="iou threshold for detection bounding boxes",
             min_value=0.1,
             max_value=1.0,
-            value=0.5,
+            value=0.3,
         )
 
         md = st.slider(
@@ -114,12 +114,13 @@ def main(args: argparse.Namespace):
                 "Loading model ... It might take some time to download the model if using for the 1st time.."
             ):
 
-                model = get_model(args, nms_thres=nms_thres,
-                                  max_detections_per_images=md,)
+                model = get_model(
+                    args, nms_thres=nms_thres, max_detections_per_images=md, score_thres=score_threshold
+                )
 
             with st.spinner("Generating results ... "):
                 # Get instance predictions for the uploaded Image
-                bb, lb, sc = get_preds(model, image, thres=score_threshold)
+                bb, lb, sc = get_preds(model, image, score_threshold)
 
             st.markdown("## Results")
             st.markdown(
