@@ -3,6 +3,7 @@ from typing import *
 import torch
 import torch.nn as nn
 from torch import Tensor
+
 from torchvision.models.detection.transform import GeneralizedRCNNTransform
 from torchvision.ops import boxes as ops
 
@@ -161,23 +162,30 @@ class Retinanet(nn.Module):
         anchors: List[Tensor],
         im_szs: List[Tuple[int, int]],
     ) -> Tuple[List[Tensor], List[Tensor], List[Tensor]]:
-        " Process `outputs` and return the predicted bboxes, score, clas_labels above `detect_thres` "
+        " Process `outputs` and return the predicted bboxes, score, clas_labels above `score_thres` "
 
-        class_logits = outputs.pop("cls_preds")
+        clas_preds = outputs.pop("cls_preds")
         bboxes = outputs.pop("bbox_preds")
-        scores = torch.sigmoid(class_logits)
+        scores = torch.sigmoid(clas_preds)
 
-        device = class_logits.device
-        num_classes = class_logits.shape[-1]
-
+        # Dictionary to store final detections
         detections = torch.jit.annotate(List[Dict[str, Tensor]], [])
 
+        device = clas_preds.device
+        num_classes = clas_preds.shape[-1]
+
+        scores = torch.sigmoid(class_logits)
+
+        # create labels for each score
+        labels = torch.arange(num_classes, device=device)
+        labels = labels.view(1, -1).expand_as(scores)
+
+        # Dictionary to store final outputs
         all_boxes = []
         all_scores = []
         all_labels = []
 
-        for bb_per_im, sc_per_im, ancs_per_im, im_sz in zip(bboxes, scores, anchors, im_szs):
-
+        for bb_per_im, sc_per_im, ancs_per_im, im_sz, lbl_per_im in zip(bboxes, scores, anchors, im_szs, labels):
             # Convert the precicitons of the model into bounding boxes
             bb_per_im = activ_2_bbox(bb_per_im, ancs_per_im)
             # clip boxes to the image size
@@ -185,13 +193,15 @@ class Retinanet(nn.Module):
 
             # Remove small boxes
             keep = ops.remove_small_boxes(bb_per_im, min_size=1e-02)
-            bb_per_im = bb_per_im[keep]
-            sc_per_im = sc_per_im[keep]
+            bb_per_im, sc_per_im, lbl_per_im = bb_per_im[keep], sc_per_im[keep], lbl_per_im[keep]
 
             # filter predictions by score threshold
             detect_mask = sc_per_im.max(1)[0] > self.score_thres
-            sc_per_im, lbl_per_im = sc_per_im[detect_mask].max(1)
-            bb_per_im = bb_per_im[detect_mask]
+            bb_per_im, sc_per_im, lbl_per_im = (
+                bb_per_im[detect_mask],
+                sc_per_im[detect_mask],
+                lbl_per_im[detect_mask],
+            )
 
             # batch everything,
             bb_per_im = bb_per_im.reshape(-1, 4)
@@ -199,9 +209,11 @@ class Retinanet(nn.Module):
             lbl_per_im = lbl_per_im.reshape(-1)
 
             # non-maximum suppression, independently done per class
-            keep = ops.batched_nms(bb_per_im, sc_per_im, lbl_per_im, self.nms_thres)
-            keep = keep[: self.detections_per_img]
+            keep = ops.batched_nms(bb_per_im, sc_per_im,
+                                   lbl_per_im, self.nms_thres)
 
+            keep = keep[: self.detections_per_img]
+            # Filter predicitons
             bb_per_im, sc_per_im, lbl_per_im = (
                 bb_per_im[keep],
                 sc_per_im[keep],
@@ -214,13 +226,13 @@ class Retinanet(nn.Module):
 
         detections.append(
             {
-                "boxes": torch.cat(all_boxes, dim=0),
+                "boxes": torch.cat(all_boxes,  dim=0),
                 "scores": torch.cat(all_scores, dim=0),
                 "labels": torch.cat(all_labels, dim=0),
             }
         )
 
-        return detections 
+        return detections
 
     def _get_outputs(self, losses, detections) -> Union[Dict[str, Tensor], List[Dict[str, Tensor]]]:
         "if `training` return losses else return `detections`"
@@ -261,7 +273,6 @@ class Retinanet(nn.Module):
                 detections = self.transform_inputs.postprocess(
                     detections, images.image_sizes, orig_im_szs
                 )
-        
+
         # Return Outputs
         return self._get_outputs(losses, detections)
-
