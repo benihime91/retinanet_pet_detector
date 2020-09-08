@@ -1,15 +1,16 @@
 import argparse
 from typing import *
 
+import albumentations as A
 import numpy as np
 import torch
-from PIL import Image
-
-import albumentations as A
 from albumentations.pytorch import ToTensorV2
+from PIL import Image
+from torch import nn
+from torchvision.ops.boxes import batched_nms
+
 from display_preds import Visualizer
 from pytorch_retinanet.src.models import Retinanet
-from torchvision.ops.boxes import batched_nms
 
 label_dict = {
     0: "abyssinian",
@@ -57,14 +58,16 @@ viz = Visualizer(class_names=label_dict)
 transforms = A.Compose([A.ToFloat(), ToTensorV2()])
 
 
-def get_model(args: argparse.Namespace):
+def get_model(args: argparse.Namespace, **kwargs):
     "returns a pre-trained retinanet model"
-    model = Retinanet(num_classes=args.num_classes,
-                      backbone_kind=args.model_backbone)
+    model = Retinanet(
+        num_classes=args.num_classes, backbone_kind=args.model_backbone, **kwargs
+    )
     # if load model from url
     if args.load_from_url:
         state_dict = state_dict = torch.hub.load_state_dict_from_url(
-            args.url, map_location="cpu")
+            args.url, map_location="cpu"
+        )
         model.load_state_dict(state_dict)
     else:
         # else load model from given path
@@ -152,33 +155,27 @@ def detection_api(
 
 
 @torch.no_grad()
-def get_predictions_v2(
-    model: torch.nn.Module,
-    uploaded_image: np.array,
-    score_threshold: float,
-    iou_threshold: float,
-) -> Tuple[List, List, List]:
+def get_predictions_v2(model: nn.Module, image: np.array, thres: float) -> Tuple[List]:
+
     "get predictions for the uploaded image"
     # Convert Image to a tensor
-    tensor_image = transforms(image=uploaded_image)["image"]
+    tensor_image = transforms(image=image)["image"]
 
     # Generate predicitons
     model.eval()
     pred = model([tensor_image])
     # Gather the bbox, scores & labels from the preds
-    pred_boxes = pred[0]["boxes"]  # Bounding boxes
-    pred_class = pred[0]["labels"]  # predicted class labels
-    pred_score = pred[0]["scores"]  # predicted scores
-    # Get list of index with score greater than threshold.
-    mask = pred_score > score_threshold
-    # Filter predictions
-    boxes = pred_boxes[mask]
-    clas = pred_class[mask]
-    scores = pred_score[mask]
-    # do NMS
-    keep_idxs = batched_nms(boxes, scores, clas, iou_threshold)
-    boxes = list(boxes[keep_idxs].cpu().numpy())
-    clas = list(clas[keep_idxs].cpu().numpy())
-    scores = list(scores[keep_idxs].cpu().numpy())
+    box = pred[0]["boxes"]  # Bounding boxes
+    clas = pred[0]["labels"]  # predicted class labels
+    score = pred[0]["scores"]  # predicted scores
 
-    return boxes, clas, scores
+    # Fit predicitons with score threshold
+    detect_mask = score > thres
+    box = box[detect_mask]
+    clas = clas[detect_mask]
+    score = score[detect_mask]
+
+    box = list(box.cpu().numpy())
+    clas = list(clas.cpu().numpy())
+    score = list(score.cpu().numpy())
+    return box, clas, score
