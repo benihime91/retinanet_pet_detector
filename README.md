@@ -45,19 +45,13 @@ To train from scratch check the `/notebooks/`. All the notebooks can be run on `
 
 ## **Inference on Single Image**:
 
-A pretrained model with `resnet18` backbone is available at: [weights](https://github.com/benihime91/retinanet_pet_detector/releases/download/v0.0.1/resnet18-2020-08-04-ffdde352.pth).<br>
-
-Using inference.py automatically loads in these weights on a retinanet with `resnet18` backbone.
-
 ```bash
   python inference.py --image "/Users/ayushman/Desktop/Datasets/oxford-iiit-pet/images/great_pyrenees_19.jpg" --fname res_test.png
 ```
 
-- By deafault `RetinaNet` with `resnet34` bckbone will be loaded . To use the `resnet18` set the `--config` flag of `inference.py` to `configs/resnet18.yaml`
-
+- By deafault `RetinaNet` with `resnet34` bckbone will be loaded . To use the `resnet18` set the `--config` flag of `inference.py` to `confs/resnet18.yaml`
 - Results are automatically saved to `output/{--fname}` to change this modify the flags of `inference.py`
-- 
-  **Flags**:
+- **Flags**:
   ```bash
   > python inference.py --help
   usage: inference.py [-h] [--config CONFIG] --image IMAGE
