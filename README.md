@@ -21,7 +21,6 @@ Create a `PetDetector` which can detect the `faces` of cats & dogs in Images usi
 - Install [python3](https://www.python.org/downloads/)
 
 - Install dependencies
-
   ```bash
   git clone https://github.com/benihime91/retinanet_pet_detector.git
   cd retinanet_pet_detector
@@ -29,7 +28,6 @@ Create a `PetDetector` which can detect the `faces` of cats & dogs in Images usi
   ```
 
 - Run app
-
   ```bash
   streamlit run app.py
   ```
