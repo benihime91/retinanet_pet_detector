@@ -3,7 +3,6 @@ import warnings
 from typing import *
 
 import numpy as np
-from omegaconf import OmegaConf
 import streamlit as st
 from PIL import Image
 
@@ -120,19 +119,15 @@ def main() -> None:
             _prompt_ = "Loading model ... It might take some time to download the model if using for the 1st time.."
 
             if model_arch == "resnet18":
-                _path = "configs/resnet18.yaml"
+                _path = "confs/resnet18.yaml"
 
             elif model_arch == "resnet34":
-                _path = "configs/resnet34.yaml"
+                _path = "confs/resnet34.yaml"
 
             conf_dict = load_yaml_config(_path)
             conf_dict["score_thres"] = score_threshold
             conf_dict["nms_thres"] = nms_thres
             conf_dict["max_detections"] = md
-
-            pretty = OmegaConf.create(conf_dict)
-            st.markdown("Parameters:")
-            st.write(f"{pretty.pretty()}")
 
             args = argparse.Namespace(**conf_dict)
 

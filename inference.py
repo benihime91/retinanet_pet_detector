@@ -46,7 +46,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--config",
         type=str,
-        default="configs/resnet34.yaml",
+        default="confs/resnet34.yaml",
         required=False,
         help="path to the config file",
     )
