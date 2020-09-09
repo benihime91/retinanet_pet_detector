@@ -1,12 +1,12 @@
 # retinanet_pet_detector
 
-Using a `Retinanet` to detect `cats & dogs`.
+Using a `Retinanet` to detect faces of `cats & dogs`.
 
 Create a `PetDetector` which can detect the `faces` of cats & dogs in Images using my implementation of [Retinanet](https://github.com/benihime91/pytorch_retinanet).
 
 ## **Dataset used**:
 
-`The Oxford-IIIT Pet Dataset` which can be found here [dataset](https://www.robots.ox.ac.uk/~vgg/data/pets/)
+`The Oxford-IIIT Pet Dataset` which can be found [here](https://www.robots.ox.ac.uk/~vgg/data/pets/).
 
 ## **TODO**:
 
@@ -14,6 +14,7 @@ Create a `PetDetector` which can detect the `faces` of cats & dogs in Images usi
 - [x] Finish [Retinanet Project](https://github.com/benihime91/pytorch_retinanet) first.
 - [x] Train the Network.
 - [x] Create WebApp using `StreamLit`.
+- [x] Deploy WebApp . `(Removed due to cost constraints)`
 
 ## **Usage**:
 
@@ -33,15 +34,15 @@ Create a `PetDetector` which can detect the `faces` of cats & dogs in Images usi
   streamlit run app.py
   ```
 
-  > **NB: app might take a few moments to start up if loading for the first time.**
+**NB: App might take a few moments to start up if loading for the first time.**
 
 ## **Train**:
 
-To train from scratch check the nbs folder for the notebooks. There are two notebooks to using:
+To train from scratch check the `/notebooks/`. All the notebooks can be run on `google collab`.
 
 - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/notebooks/03_train.ipynb) [03_train.ipynb](https://github.com/benihime91/retinanet_pet_detector/blob/master/notebooks/03_train.ipynb). Train using same hyperparameters with `resnet18` backbone.
 
-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/notebooks/04_template.ipynb)[04_template.ipynb](https://github.com/benihime91/retinanet_pet_detector/blob/master/notebooks/04_template.ipynb). Template notebook to train using different hyperparameters and different backbone.
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/notebooks/04_template.ipynb)[04_template.ipynb](https://github.com/benihime91/retinanet_pet_detector/blob/master/notebooks/04_template.ipynb). Template notebook to train with different hyperparameters and different backbone.
 
 ## **Inference on Single Image**:
 
@@ -80,14 +81,6 @@ Using inference.py automatically loads in these weights on a retinanet with `res
   --fname FNAME         name of the output prediction file
   ```
 
-## **Exploratory Data Analysis**:
-
-![cat_breeds](nbs/Ims/cat_breeds.png) ![cat_breeds](nbs/Ims/dog_breeds.png)
-
-> **Example images from the Dataset:**
-
-![example_1](nbs/Ims/example.png) ![example_1](nbs/Ims/example_2.png)
-
 ## **Results**:
 
 - **COCO API results on hold-out test dataset with a `resnet18` backbone:**
@@ -108,6 +101,8 @@ Using inference.py automatically loads in these weights on a retinanet with `res
   Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.450
   ```
 
-  **Results can be better with a bigger backbone.**
+**NB: Results can be better with a bigger backbone.**
 
-- **Results:** ![](images/res_2.png) ![](images/res_3.png) ![](images/res_4.png)
+## **Inference:**
+
+![](images/res_2.png) ![](images/res_3.png) ![](images/res_4.png)
