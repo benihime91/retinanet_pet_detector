@@ -19,14 +19,12 @@ Create a `PetDetector` which can detect the `faces` of cats & dogs in Images usi
 ## **Usage**:
 
 - Install [python3](https://www.python.org/downloads/)
-
 - Install dependencies
   ```bash
   git clone https://github.com/benihime91/retinanet_pet_detector.git
   cd retinanet_pet_detector
   pip install -r requirements.txt
   ```
-
 - Run app
   ```bash
   streamlit run app.py
@@ -55,31 +53,31 @@ Using inference.py automatically loads in these weights on a retinanet with `res
   python inference.py --image "/Users/ayushman/Desktop/Datasets/oxford-iiit-pet/images/great_pyrenees_19.jpg" --fname res_test.png
 ```
 
-- To change the model backbone , model loading path/url modify the `config.yaml` file.
+- By deafault `RetinaNet` with `resnet34` bckbone will be loaded . To use the `resnet18` set the `--config` flag of `inference.py` to `configs/resnet18.yaml`
 
 - Results are automatically saved to `output/{--fname}` to change this modify the flags of `inference.py`
-
+- 
   **Flags**:
-
   ```bash
   > python inference.py --help
   usage: inference.py [-h] [--config CONFIG] --image IMAGE
-                    [--score_thres SCORE_THRES] [--iou_thres IOU_THRES]
-                    [--save SAVE] [--show SHOW] [--save_dir SAVE_DIR]
-                    [--fname FNAME]
+                      [--score_thres SCORE_THRES] [--iou_thres IOU_THRES]
+                      [--md MD] [--save SAVE] [--show SHOW]
+                      [--save_dir SAVE_DIR] [--fname FNAME]
 
   optional arguments:
-  -h, --help            show this help message and exit
-  --config CONFIG       path to the config file
-  --image IMAGE         path to the input image
-  --score_thres SCORE_THRES
-                        score_threshold to threshold detections
-  --iou_thres IOU_THRES
-                        iou_threshold for bounding boxes
-  --save SAVE           wether to save the ouput predictions
-  --show SHOW           wether to display the output predicitons
-  --save_dir SAVE_DIR   directory where to save the output predictions
-  --fname FNAME         name of the output prediction file
+    -h, --help            show this help message and exit
+    --config CONFIG       path to the config file
+    --image IMAGE         path to the input image
+    --score_thres SCORE_THRES
+                          score_threshold to threshold detections
+    --iou_thres IOU_THRES
+                          iou_threshold for bounding boxes
+    --md MD               max detections in the image
+    --save SAVE           wether to save the ouput predictions
+    --show SHOW           wether to display the output predicitons
+    --save_dir SAVE_DIR   directory where to save the output predictions
+    --fname FNAME         name of the output prediction file
   ```
 
 ## **Results**:

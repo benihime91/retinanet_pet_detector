@@ -1,0 +1,4 @@
+## For resnet34
+model_backbone: "resnet34"
+url: https://github.com/benihime91/retinanet_pet_detector/releases/download/v0.0.1/resnet34-pets-ver0.0.1.pth
+num_classes: 37

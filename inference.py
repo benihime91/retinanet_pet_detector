@@ -1,24 +1,29 @@
 import argparse
-import warnings
+from typing import *
 
-import yaml
+from omegaconf.omegaconf import OmegaConf
 
-from utils import detection_api, get_model
-
-
-def load_yaml_config(path):
-    "load a yaml config"
-    with open(path, "r") as f:
-        conf_dict = yaml.safe_load(f)
-    conf_dict = argparse.Namespace(**conf_dict)
-    return conf_dict
+from utils import detection_api, get_model, load_yaml_config
+from omegaconf import OmegaConf
 
 
 def main(args):
+    import warnings
+
     warnings.filterwarnings("ignore")
     # grab the model
-    print("[INFO] Serializing model ....")
     conf_dict = load_yaml_config(args.config)
+    conf_dict["score_thres"] = args.score_thres
+    conf_dict["nms_thres"] = args.iou_thres
+    conf_dict["max_detections"] = args.md
+
+    pretty = OmegaConf.create(conf_dict)
+    print("[INFO] Parametes:")
+    print(pretty.pretty())
+
+    print("[INFO] Serializing model ....")
+
+    conf_dict = argparse.Namespace(**conf_dict)
     model = get_model(conf_dict)
 
     # grab the path to the Image file
@@ -28,8 +33,6 @@ def main(args):
     detection_api(
         model,
         fname,
-        score_thres=args.score_thres,
-        iou_thres=args.iou_thres,
         save=args.save,
         show=args.show,
         save_dir=args.save_dir,
@@ -39,23 +42,27 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+
     parser.add_argument(
         "--config",
         type=str,
-        default="config.yaml",
+        default="configs/resnet34.yaml",
         required=False,
         help="path to the config file",
     )
+
     parser.add_argument(
         "--image", type=str, required=True, help="path to the input image"
     )
+
     parser.add_argument(
         "--score_thres",
         required=False,
         type=float,
-        default=0.5,
+        default=0.6,
         help="score_threshold to threshold detections",
     )
+
     parser.add_argument(
         "--iou_thres",
         required=False,
@@ -63,6 +70,15 @@ if __name__ == "__main__":
         default=0.3,
         help="iou_threshold for bounding boxes",
     )
+
+    parser.add_argument(
+        "--md",
+        required=False,
+        type=int,
+        default=100,
+        help="max detections in the image",
+    )
+
     parser.add_argument(
         "--save",
         type=bool,
@@ -70,6 +86,7 @@ if __name__ == "__main__":
         help="wether to save the ouput predictions",
         default=True,
     )
+
     parser.add_argument(
         "--show",
         type=bool,
@@ -77,6 +94,7 @@ if __name__ == "__main__":
         help="wether to display the output predicitons",
         default=False,
     )
+
     parser.add_argument(
         "--save_dir",
         type=str,
@@ -84,6 +102,7 @@ if __name__ == "__main__":
         help="directory where to save the output predictions",
         default="output",
     )
+
     parser.add_argument(
         "--fname",
         type=str,

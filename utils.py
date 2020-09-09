@@ -1,16 +1,16 @@
 import argparse
 from typing import *
 
+import albumentations as A
 import numpy as np
 import torch
+import yaml
+from albumentations.pytorch import ToTensorV2
 from PIL import Image
 from torch import nn
 
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
 from display_preds import Visualizer
 from pytorch_retinanet.src.models import Retinanet
-from torchvision.ops.boxes import batched_nms
 
 label_dict = {
     0: "abyssinian",
@@ -58,64 +58,54 @@ viz = Visualizer(class_names=label_dict)
 transforms = A.Compose([A.ToFloat(), ToTensorV2()])
 
 
-def get_model(args: argparse.Namespace, **kwargs):
+def load_yaml_config(path) -> Dict:
+    "load a yaml config and returns a dictionary"
+    with open(path, "r") as f:
+        conf_dict = yaml.load(f, Loader=yaml.FullLoader)
+    return conf_dict
+
+
+def get_model(args: argparse.Namespace):
     "returns a pre-trained retinanet model"
     model = Retinanet(
-        num_classes=args.num_classes, backbone_kind=args.model_backbone, **kwargs
+        num_classes=args.num_classes,
+        backbone_kind=args.model_backbone,
+        score_thres=args.score_thres,
+        nms_thres=args.nms_thres,
+        max_detections_per_images=args.max_detections,
     )
-    # if load model from url
-    if args.load_from_url:
-        state_dict = state_dict = torch.hub.load_state_dict_from_url(
-            args.url, map_location="cpu"
-        )
-        model.load_state_dict(state_dict)
-    else:
-        # else load model from given path
-        model.load_state_dict(torch.load(args.state_dict_path))
+
+    state_dict = torch.hub.load_state_dict_from_url(args.url, map_location="cpu")
+
+    model.load_state_dict(state_dict)
+
     return model
 
 
 @torch.no_grad()
-def get_preds(
-    model: torch.nn.Module,
-    path: str,
-    threshold: float,
-    iou_threshold: float,
-    device: Union[torch.device, str] = "cpu",
-) -> Tuple[List, List, List]:
-    "Get predictions on image"
+def get_preds(model: nn.Module, image: Union[np.array, str]) -> Tuple[List]:
+    "get predictions for the uploaded image"
+    # load in the image if string is give
+    if isinstance(image, str):
+        image = Image.open(image).convert("RGB")
+        # Convert PIL image to array
+        image = np.array(image)
 
-    model.to(device)
-    # Load the imag
-    img = Image.open(path).convert("RGB")
-    img = np.array(img)
-
-    # Process the image
-    img = transforms(image=img)["image"]
-    img.to(device)
-
-    # Generate predictions
+    # Convert Image to a tensor
+    tensor_image = transforms(image=image)["image"]
+    # Generate predicitons
     model.eval()
-    pred = model([img])
+    pred = model([tensor_image])
 
     # Gather the bbox, scores & labels from the preds
     pred_boxes = pred[0]["boxes"]  # Bounding boxes
     pred_class = pred[0]["labels"]  # predicted class labels
     pred_score = pred[0]["scores"]  # predicted scores
 
-    # Get list of index with score greater than threshold.
-    mask = pred_score > threshold
-
-    # Filter predictions
-    boxes = pred_boxes[mask]
-    clas = pred_class[mask]
-    scores = pred_score[mask]
-
-    # do NMS
-    keep_idxs = batched_nms(boxes, scores, clas, iou_threshold)
-    boxes = list(boxes[keep_idxs].cpu().numpy())
-    clas = list(clas[keep_idxs].cpu().numpy())
-    scores = list(scores[keep_idxs].cpu().numpy())
+    # Process detections
+    boxes = list(pred_boxes.cpu().numpy())
+    clas = list(pred_class.cpu().numpy())
+    scores = list(pred_score.cpu().numpy())
 
     return boxes, clas, scores
 
@@ -123,18 +113,18 @@ def get_preds(
 def detection_api(
     model: torch.nn.Module,
     img: str,
-    score_thres: float = 0.5,
-    iou_thres: float = 0.2,
     save: bool = True,
     show: bool = False,
     fname: str = "res.png",
     save_dir: str = "outputs",
 ) -> None:
-    "Draw bbox predictions on given image"
 
+    "Draw bbox predictions on given image"
     # Extract the predicitons for given Image
     print("[INFO] Generating Predictions ..... ")
-    bb, cls, sc = get_preds(model, img, score_thres, iou_thres)
+
+    bb, cls, sc = get_preds(model, img)
+
     print(f"[INFO] {len(bb)} bounding_boxes detected ....")
     print("[INFO] creating bbox on the image .... ")
 
@@ -152,29 +142,3 @@ def detection_api(
         save_dir=save_dir,
         fname=fname,
     )
-
-
-@torch.no_grad()
-def get_predictions_v2(model: nn.Module, image: np.array, thres: float) -> Tuple[List]:
-    "get predictions for the uploaded image"
-    # Convert Image to a tensor
-    tensor_image = transforms(image=image)["image"]
-
-    # Generate predicitons
-    model.eval()
-    pred = model([tensor_image])
-    # Gather the bbox, scores & labels from the preds
-    box = pred[0]["boxes"]  # Bounding boxes
-    clas = pred[0]["labels"]  # predicted class labels
-    score = pred[0]["scores"]  # predicted scores
-
-    # Fit predictions with score threshold
-    detect_mask = score > thres
-    box = box[detect_mask]
-    clas = clas[detect_mask]
-    score = score[detect_mask]
-
-    box = list(box.cpu().numpy())
-    clas = list(clas.cpu().numpy())
-    score = list(score.cpu().numpy())
-    return box, clas, score

@@ -3,14 +3,13 @@ import warnings
 from typing import *
 
 import numpy as np
+from omegaconf import OmegaConf
+import streamlit as st
 from PIL import Image
 
-import streamlit as st
 from display_preds import Visualizer
 from inference import load_yaml_config
-from utils import get_model
-from utils import get_predictions_v2 as get_preds
-from utils import label_dict
+from utils import get_model, get_preds, label_dict
 
 warnings.filterwarnings("ignore")
 
@@ -24,14 +23,15 @@ viz = Visualizer(label_dict)
 def load_model(args: argparse.Namespace):
     " loads in the pre-trained RetinaNet Model "
     model = get_model(args)
-    model.to(device=DEVICE)
     return model
 
 
 # Loads in the user Input Image
-def load_image():
-    uploaded_image = st.file_uploader(
-        "Choose a png or jpg image", type=["jpg", "png", "jpeg"])
+def load_image() -> np.array:
+    "Loads in an image using the streamlit API"
+    _prompt_ = "Choose a png or jpg image"
+    uploaded_image = st.file_uploader(_prompt_, type=["jpg", "png", "jpeg"])
+
     if uploaded_image is not None:
         st.markdown("## Uploaded Image")
         # Make sure image is RGB
@@ -45,6 +45,7 @@ def load_image():
 
 # Draw prediciton on the given image
 def draw_preds_on_image(uploaded_image, boxes, labels, scores):
+    "draws predicitons on the Given Image"
     image = viz.draw_bboxes(
         uploaded_image, boxes, labels, scores, save=False, show=False, return_fig=True
     )
@@ -70,8 +71,7 @@ def start_app() -> None:
         "**Note:** The model has been trained on pets breeds given in the [The Oxford-IIIT Pet Dataset](https://www.robots.ox.ac.uk/~vgg/data/pets/)"
         " and therefore will only with those kind of images."
     )
-    st.markdown(
-        "**To be more precise the model has been trained on these breeds:**")
+    st.markdown("**To be more precise the model has been trained on these breeds:**")
     st.image(
         Image.open("images/breed_count.jpg"),
         caption="Train Data Statistics ",
@@ -80,13 +80,16 @@ def start_app() -> None:
     st.markdown("[pic credits](https://www.robots.ox.ac.uk/~vgg/data/pets/)")
 
 
-def main(args: argparse.Namespace):
+def main() -> None:
+    # Start the app
     start_app()
+
+    # Load in the Image
     image = load_image()
 
     # If image is Upladed make predictions when button is clicked
     if image is not None:
-        st.markdown("> Detection Parameters")
+        st.markdown("## Set Detection Parameters")
 
         score_threshold = st.slider(
             label="score threshold for detections (Detections with score < score_threshold are discarded)",
@@ -109,18 +112,37 @@ def main(args: argparse.Namespace):
             value=100,
         )
 
-        if st.button("Generate predictions"):
-            with st.spinner(
-                "Loading model ... It might take some time to download the model if using for the 1st time.."
-            ):
+        _prompt_ = "Select the model architecture: "
+        model_arch = str(st.selectbox(_prompt_, ("resnet34", "resnet18")))
 
-                model = get_model(
-                    args, nms_thres=nms_thres, max_detections_per_images=md, score_thres=score_threshold
-                )
+        if st.button("Generate predictions"):
+
+            _prompt_ = "Loading model ... It might take some time to download the model if using for the 1st time.."
+
+            if model_arch == "resnet18":
+                _path = "configs/resnet18.yaml"
+
+            elif model_arch == "resnet34":
+                _path = "configs/resnet34.yaml"
+
+            conf_dict = load_yaml_config(_path)
+            conf_dict["score_thres"] = score_threshold
+            conf_dict["nms_thres"] = nms_thres
+            conf_dict["max_detections"] = md
+
+            pretty = OmegaConf.create(conf_dict)
+            st.markdown("Parameters:")
+            st.write(f"{pretty.pretty()}")
+
+            args = argparse.Namespace(**conf_dict)
+
+            with st.spinner(_prompt_):
+                model = get_model(args=args)
+                # Load in the model
 
             with st.spinner("Generating results ... "):
                 # Get instance predictions for the uploaded Image
-                bb, lb, sc = get_preds(model, image, score_threshold)
+                bb, lb, sc = get_preds(model, image)
 
             st.markdown("## Results")
             st.markdown(
@@ -135,7 +157,5 @@ def main(args: argparse.Namespace):
 
 
 if __name__ == "__main__":
-    # load in the args using the config file
-    args = load_yaml_config(path="config.yaml")
     # run the app
-    main(args)
+    main()
