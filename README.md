@@ -44,6 +44,9 @@ To train from scratch check the `/notebooks/`. All the notebooks can be run on `
 
 - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/notebooks/04_template.ipynb)[04_template.ipynb](https://github.com/benihime91/retinanet_pet_detector/blob/master/notebooks/04_template.ipynb). Template notebook to train with different hyperparameters and different backbone.
 
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/notebooks/05_resnet34.ipynb) [05_resnet34.ipynb](https://github.com/benihime91/retinanet_pet_detector/blob/master/notebooks/05_resnet34.ipynb). Train using same hyperparameters with `resnet34` backbone.
+
+
 ## **Inference on Single Image**:
 
 A pretrained model with `resnet18` backbone is available at: [weights](https://github.com/benihime91/retinanet_pet_detector/releases/download/v0.0.1/resnet18-2020-08-04-ffdde352.pth).<br>
@@ -84,7 +87,6 @@ Using inference.py automatically loads in these weights on a retinanet with `res
 ## **Results**:
 
 - **COCO API results on hold-out test dataset with a `resnet18` backbone:**
-
   ```bash
   IoU metric: bbox
   Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.434
@@ -100,9 +102,22 @@ Using inference.py automatically loads in these weights on a retinanet with `res
   Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.500
   Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.450
   ```
-
-**NB: Results can be better with a bigger backbone.**
-
+- **COCO API results on hold-out test dataset with a `resnet34` backbone:**
+  ```bash
+  IoU metric: bbox
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.531
+   Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+   Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.563
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.531
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.519
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.544
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.544
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.544
+   ```
 ## **Inference:**
 
 ![](images/res_2.png) ![](images/res_3.png) ![](images/res_4.png)
