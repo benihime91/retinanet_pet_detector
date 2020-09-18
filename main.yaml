@@ -3,6 +3,9 @@ model:
   num_classes: 37
 
 hparams:
+  learning_rate: 0.002
+  weight_decay: 0.01
+  momentum: 0.9
   train_csv: "data/train.csv"
   valid_csv: "data/valid.csv"
   test_csv: "data/test.csv"
@@ -14,9 +17,9 @@ hparams:
   optimizer:
     class_name: torch.optim.SGD
     params:
-      lr: 0.002
-      weight_decay: 0.001
-      momentum: 0.9
+      lr: ${learning_rate}
+      weight_decay: ${weight_decay}
+      momentum: ${momentum}
 
   scheduler:
     class_name: torch.optim.lr_scheduler.MultiStepLR
