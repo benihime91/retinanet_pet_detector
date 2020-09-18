@@ -108,6 +108,3 @@ To train from scratch check the `/notebooks/`. All the notebooks can be run on `
    Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
    Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.544
    ```
-## **Inference:**
-
-![](images/res_2.png) ![](images/res_3.png) ![](images/res_4.png)
