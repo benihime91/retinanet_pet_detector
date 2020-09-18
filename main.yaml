@@ -3,17 +3,11 @@ model:
   num_classes: 37
 hparams:
   train_csv: "data/train.csv"
-
   valid_csv: "data/valid.csv"
-
   test_csv: "data/test.csv"
-
   train_batch_size: 4
-
   valid_batch_size: 32
-
   test_batch_size: 32
-
   iou_types: "bbox"
 
   optimizer:

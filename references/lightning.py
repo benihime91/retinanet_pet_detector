@@ -19,7 +19,9 @@ from .utils import get_tfms, load_obj
 
 
 class DetectionModel(pl.LightningModule):
-    def __init__(self, model: nn.Module, hparams: Union[Dict, argparse.Namespace, DictConfig]):
+    def __init__(
+        self, model: nn.Module, hparams: Union[Dict, argparse.Namespace, DictConfig]
+    ):
         super(DetectionModel, self).__init__()
         self.model = model
         self.hparams = hparams
@@ -31,15 +33,15 @@ class DetectionModel(pl.LightningModule):
         "instatiates optimizer & scheduler(s)"
         params = [p for p in self.model.parameters() if p.requires_grad]
         # optimizer
-        optimizer = load_obj(self.hparams.optimizer.class_name)(
+        self.optimizer = load_obj(self.hparams.optimizer.class_name)(
             params, **self.hparams.optimizer.params
         )
         # scheduler
-        scheduler = load_obj(self.hparams.scheduler.class_name)(
-            optimizer, **self.hparams.scheduler.params
+        self.scheduler = load_obj(self.hparams.scheduler.class_name)(
+            self.optimizer, **self.hparams.scheduler.params
         )
 
-        return [optimizer], [scheduler]
+        return [self.optimizer], [self.scheduler]
 
     # ===================================================== #
     # Getting the data ready
