@@ -1,4 +1,5 @@
 import argparse
+import ast
 from typing import *
 
 import albumentations as A
@@ -10,47 +11,13 @@ from PIL import Image
 from torch import nn
 
 from display_preds import Visualizer
-from pytorch_retinanet.src.models import Retinanet
+from pytorch_retinanet.retinanet.models import Retinanet
 
-label_dict = {
-    0: "abyssinian",
-    1: "american_bulldog",
-    2: "american_pit_bull_terrier",
-    3: "basset_hound",
-    4: "beagle",
-    5: "bengal",
-    6: "birman",
-    7: "bombay",
-    8: "boxer",
-    9: "british_shorthair",
-    10: "chihuahua",
-    11: "egyptian_mau",
-    12: "english_cocker_spaniel",
-    13: "english_setter",
-    14: "german_shorthaired",
-    15: "great_pyrenees",
-    16: "havanese",
-    17: "japanese_chin",
-    18: "keeshond",
-    19: "leonberger",
-    20: "maine_coon",
-    21: "miniature_pinscher",
-    22: "newfoundland",
-    23: "persian",
-    24: "pomeranian",
-    25: "pug",
-    26: "ragdoll",
-    27: "russian_blue",
-    28: "saint_bernard",
-    29: "samoyed",
-    30: "scottish_terrier",
-    31: "shiba_inu",
-    32: "siamese",
-    33: "sphynx",
-    34: "staffordshire_bull_terrier",
-    35: "wheaten_terrier",
-    36: "yorkshire_terrier",
-}
+# read in the Label Dictionary
+f = open("labels.names", "r")
+label_dict = f.read()
+label_dict = ast.literal_eval(label_dict)
+f.close()
 
 # Instantiate the visualizer
 viz = Visualizer(class_names=label_dict)
@@ -121,12 +88,7 @@ def detection_api(
 
     "Draw bbox predictions on given image"
     # Extract the predicitons for given Image
-    print("[INFO] Generating Predictions ..... ")
-
     bb, cls, sc = get_preds(model, img)
-
-    print(f"[INFO] {len(bb)} bounding_boxes detected ....")
-    print("[INFO] creating bbox on the image .... ")
 
     # Draw bounding boxes
     img = Image.open(img).convert("RGB")

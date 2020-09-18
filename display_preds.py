@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -6,10 +7,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-from pytorch_retinanet.src.utils.general_utils import ifnone
+from pytorch_retinanet.retinanet.utilities import ifnone
 
 # Turn interactive plotting off
 plt.ioff()
+
+logger = logging.getLogger(__name__)
 
 
 class Visualizer:
@@ -19,6 +22,7 @@ class Visualizer:
             [[1, 0, 1], [0, 0, 1], [0, 1, 1], [0, 1, 0], [1, 1, 0], [1, 0, 0]],
             dtype=np.float32,
         )
+        logger.info("Visualizer Initialized")
 
     def _get_color(self, c, x, max_val):
         ratio = float(x) / max_val * 5
@@ -53,13 +57,13 @@ class Visualizer:
         height = img.shape[0]
 
         # Create a figure and plot the image
-        sz = ifnone(
-            figsize, (15, 15)
-        )  # NB: use smaller size beacuse matplotlib takes long time to render large images
+        # NB: use smaller size beacuse matplotlib takes long time to render large images
+        sz = ifnone(figsize, (15, 15))
         fig, a = plt.subplots(1, 1, figsize=sz)
         a.imshow(img)
 
         scores = ifnone(scores, np.repeat(1.0, axis=0, repeats=len(boxes)))
+        logger.info(f"Found {len(boxes)} bounding boxes on the given image")
 
         # Plot the bounding boxes and corresponding labels on top of the image
         for i in range(len(boxes)):
@@ -93,10 +97,12 @@ class Visualizer:
 
             # Set the postion and size of the bounding box. (x1, y2) is the pixel coordinate of the
             # lower-left corner of the bounding box relative to the size of the image.
+            c1 = (x1, y2)
+            w1 = width_x
+            w2 = width_y
             rect = patches.Rectangle(
-                (x1, y2), width_x, width_y, linewidth=2, edgecolor=rgb, facecolor="none"
+                c1, w1, w2, linewidth=2, edgecolor=rgb, facecolor="none"
             )
-
             # Draw the bounding box on top of the image
             a.add_patch(rect)
 
@@ -109,14 +115,10 @@ class Visualizer:
                 lyc = (img.shape[0] * 1.180) / 100
 
                 # Draw the labels on top of the image
-                a.text(
-                    x1 + lxc,
-                    y1 - lyc,
-                    conf_tx,
-                    fontsize=12,
-                    color="k",
-                    bbox=dict(facecolor=rgb, edgecolor=rgb, alpha=0.8),
-                )
+                c1 = x1 + lxc
+                c2 = y1 - lyc
+                bb = dict(facecolor=rgb, edgecolor=rgb, alpha=0.8)
+                a.text(c1, c2, conf_tx, fontsize=12, color="k", bbox=bb)
 
         a.get_xaxis().set_visible(False)
         a.get_yaxis().set_visible(False)
@@ -130,7 +132,7 @@ class Visualizer:
                 fname=os.path.join(save_dir, fname), bbox_inches="tight", pad_inches=0,
             )
             plt.close(fig)
-            print(f"[INFO] results saved to {os.path.join(save_dir, fname)}")
+            logger.log(f"Results saved to {os.path.join(save_dir, fname)}")
 
         if return_fig:
             return fig
