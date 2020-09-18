@@ -5,8 +5,9 @@ import albumentations as A
 from omegaconf import DictConfig, OmegaConf
 
 
-def _load_obj(obj_path: str, default_obj_path: str = "") -> Any:
-    """Extract an object from a given path.
+def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
+    """
+    Extract an object from a given path.
         Args:
             obj_path: Path to an object to be extracted, including the object name.
             default_obj_path: Default object path.
@@ -24,19 +25,19 @@ def _load_obj(obj_path: str, default_obj_path: str = "") -> Any:
     return getattr(module_obj, obj_name)
 
 
-def _get_tfms(conf: DictConfig) -> Dict[str, A.Compose]:
+def get_tfms(conf: DictConfig) -> Dict[str, A.Compose]:
     """
     Loads in albumentation augmentations for train, valid, test
-    from given config as a dictionary
+    from given config as a dictionary.
     """
     trn_tfms = [
-        _load_obj(i["class_name"])(**i["params"]) for i in conf.augmentation.train
+        load_obj(i["class_name"])(**i["params"]) for i in conf.augmentation.train
     ]
     val_tfms = [
-        _load_obj(i["class_name"])(**i["params"]) for i in conf.augmentation.valid
+        load_obj(i["class_name"])(**i["params"]) for i in conf.augmentation.valid
     ]
     test_tfms = [
-        _load_obj(i["class_name"])(**i["params"]) for i in conf.augmentation.test
+        load_obj(i["class_name"])(**i["params"]) for i in conf.augmentation.test
     ]
 
     # transforms dictionary :

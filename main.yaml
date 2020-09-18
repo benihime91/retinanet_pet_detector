@@ -1,0 +1,109 @@
+hparams:
+  train_csv: "train.csv"
+
+  valid_csv: "valid.csv"
+
+  test_csv: "test.csv"
+
+  train_batch_size: 4
+
+  valid_batch_size: 32
+
+  test_batch_size: 32
+
+  iou_types: "bbox"
+
+  optimizer:
+    class_name: torch.optim.SGD
+    params:
+      lr: 0.002
+      weight_decay: 0.001
+      momentum: 0.9
+
+  scheduler:
+    class_name: torch.optim.lr_scheduler.MultiStepLR
+    params:
+      milestones: [32, 55]
+      gamma: 0.1
+
+  augmentation:
+    train:
+      - class_name: albumentations.HorizontalFlip
+        params:
+          p: 0.5
+
+      - class_name: albumentations.ToGray
+        params:
+          p: 0.5
+
+      - class_name: albumentations.CLAHE
+        params:
+          p: 0.5
+
+      - class_name: albumentations.ToFloat
+        params:
+          always_apply: True
+          max_value: 255.0
+
+      - class_name: albumentations.pytorch.transforms.ToTensorV2
+        params:
+          always_apply: True
+
+    valid:
+      - class_name: albumentations.ToFloat
+        params:
+          always_apply: True
+          max_value: 255.0
+
+      - class_name: albumentations.pytorch.transforms.ToTensorV2
+        params:
+          always_apply: True
+
+    test:
+      - class_name: albumentations.ToFloat
+        params:
+          always_apply: True
+          max_value: 255.0
+
+      - class_name: albumentations.pytorch.transforms.ToTensorV2
+        params:
+          always_apply: True
+
+trainer:
+  callbacks:
+    early_stopping:
+      class_name: pytorch_lightning.EarlyStopping
+      params:
+        mode: "max"
+        monitor: "valid_mAP"
+        patience: 3
+
+    model_checkpoint:
+      class_name: pytorch_lightning.callbacks.ModelCheckpoint
+      params:
+        filepath: checkpoints/
+        mode: "max"
+        monitor: "valid_mAP"
+        save_top_k: 2
+
+    learning_rate_monitor:
+      class_name: pytorch_lightning.callbacks.LearningRateMonitor
+      params:
+        logging_interval: "step"
+
+  logger:
+    class_name: pytorch_lightning.loggers.TensorBoardLogger
+    params:
+      save_dir: "logs/"
+
+  flags:
+    check_val_every_n_epoch: 5
+    max_epochs: 100
+    precision: 16
+    gpus: 1
+    num_sanity_val_steps: 0
+    profiler: False
+    weights_summary: None
+    distributed_backend: "dp"
+    terminate_on_nan: True
+    benchmark: True
