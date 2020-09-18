@@ -6,7 +6,6 @@ from typing import *
 
 import albumentations as A
 import numpy as np
-from streamlit import logger
 import torch
 import yaml
 from albumentations.pytorch import ToTensorV2
@@ -112,12 +111,12 @@ def load_yaml_config(path) -> Dict:
 
 def get_model(args: argparse.Namespace, logger=None):
     "returns a pre-trained retinanet model"
-    
+
     if logger is not None:
         logger.name = "retinanet"
     else:
         logger = logging.getLogger("retinanet")
-        
+
     model = Retinanet(
         args.num_classes,
         args.model_backbone,
@@ -174,7 +173,7 @@ def detection_api(
     show: bool = False,
     fname: str = "res.png",
     save_dir: str = "outputs",
-    logger = None
+    logger=None,
 ):
 
     """
@@ -197,5 +196,7 @@ def detection_api(
     img = Image.open(img).convert("RGB")
     img = np.array(img)
     # Draw the bounding boxes over the loaded image
-    viz.draw_bboxes(img, bb, cls, sc, save=save, show=show, save_dir=save_dir, fname=fname)
+    viz.draw_bboxes(
+        img, bb, cls, sc, save=save, show=show, save_dir=save_dir, fname=fname
+    )
 
