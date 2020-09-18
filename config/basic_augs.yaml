@@ -1,0 +1,42 @@
+augmentation:
+  train:
+    - class_name: albumentations.HorizontalFlip
+      params:
+        p: 0.5
+
+    - class_name: albumentations.ToGray
+      params:
+        p: 0.5
+
+    - class_name: albumentations.CLAHE
+      params:
+        p: 0.5
+
+    - class_name: albumentations.ToFloat
+      params:
+        always_apply: True
+        max_value: 255.0
+
+    - class_name: albumentations.pytorch.transforms.ToTensorV2
+      params:
+        always_apply: True
+
+  valid:
+    - class_name: albumentations.ToFloat
+      params:
+        always_apply: True
+        max_value: 255.0
+
+    - class_name: albumentations.pytorch.transforms.ToTensorV2
+      params:
+        always_apply: True
+
+  test:
+    - class_name: albumentations.ToFloat
+      params:
+        always_apply: True
+        max_value: 255.0
+
+    - class_name: albumentations.pytorch.transforms.ToTensorV2
+      params:
+        always_apply: True
