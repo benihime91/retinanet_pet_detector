@@ -18,7 +18,9 @@ def main(args: argparse.Namespace, logger: logging.Logger):
     import pytorch_lightning as pl
 
     # set lightning seed to results are reproducible
+    seed = 123
     pl.seed_everything(123)
+    logger.info(f"Seed : {seed}")
 
     # load the config file
     cfg = OmegaConf.load(args.config)
@@ -30,11 +32,9 @@ def main(args: argparse.Namespace, logger: logging.Logger):
     # instantiate Retinanet model
     logger.name = "retinanet"
     model = Retinanet(**cfg.model, logger=logger)
-    logger.info("Model: ")
-    print(model)
+    logger.info(f"Model: \n, {model}")
 
     logger.name = "pet-detector"
-
     # Instantiate LightningModel & Trainer
     litModule = DetectionModel(model, cfg.hparams)
     trainer = initialize_trainer(cfg.trainer, weights_summary=None)
