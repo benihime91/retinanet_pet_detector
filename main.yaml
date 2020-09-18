@@ -98,8 +98,8 @@ trainer:
   flags:
     check_val_every_n_epoch: 5
     max_epochs: 100
-    precision: 32
-    gpus: 0
+    precision: 16
+    gpus: 1
     num_sanity_val_steps: 0
     profiler: False
     terminate_on_nan: True

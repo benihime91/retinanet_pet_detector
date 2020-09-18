@@ -14,7 +14,13 @@ from pytorch_retinanet.retinanet.utilities import ifnone
 from references import DetectionModel, initialize_trainer
 
 
-def main(args, logger):
+def main(args: argparse.Namespace, logger: logging.Logger):
+    import pytorch_lightning as pl
+
+    # set lightning seed to results are reproducible
+    pl.seed_everything(123)
+
+    # load the config file
     cfg = OmegaConf.load(args.config)
     if args.disp:
         logger.name = "configurations"
@@ -26,7 +32,6 @@ def main(args, logger):
     model = Retinanet(**cfg.model, logger=logger)
     logger.info("Model: ")
     print(model)
-
 
     logger.name = "pet-detector"
 
