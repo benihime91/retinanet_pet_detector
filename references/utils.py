@@ -17,6 +17,7 @@ from .display_preds import Visualizer
 
 # Path to the Label Dictionary
 LABEL_PATH = "labels.names"
+LABEL_PATH_ABS = "data/labels.names"
 
 
 def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
@@ -89,7 +90,10 @@ def get_label_dict(fname):
 
 
 # Dictionary conating a mapping of the Labels
-label_dict = get_label_dict(LABEL_PATH)
+try:
+    label_dict = get_label_dict(LABEL_PATH)
+except:
+    label_dict = get_label_dict(LABEL_PATH_ABS)
 
 transforms = A.Compose([A.ToFloat(), ToTensorV2()])
 

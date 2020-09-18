@@ -1,10 +1,16 @@
 import argparse
+import os
 from typing import Dict, Union
 
 import pandas as pd
 import pytorch_lightning as pl
 import torch
 from omegaconf import DictConfig
+from pytorch_lightning.callbacks import (
+    EarlyStopping,
+    LearningRateLogger,
+    ModelCheckpoint,
+)
 from torch import nn
 from torch.utils.data import DataLoader
 
@@ -40,6 +46,11 @@ class DetectionModel(pl.LightningModule):
         self.scheduler = load_obj(self.hparams.scheduler.class_name)(
             self.optimizer, **self.hparams.scheduler.params
         )
+        self.scheduler = {
+            "scheduler": self.scheduler,
+            "interval": self.hparams.scheduler.interval,
+            "frequency": self.hparams.scheduler.frequency,
+        }
 
         return [self.optimizer], [self.scheduler]
 
@@ -165,3 +176,32 @@ class DetectionModel(pl.LightningModule):
             "log": logs,
             "progress_bar": logs,
         }
+
+
+def initialize_trainer(trainer_conf: DictConfig) -> pl.Trainer:
+    """
+    Instantiates a Lightning Trainer
+    from given config file 
+    """
+    # instantiate EarlyStoppping Callback
+    early_stopping = EarlyStopping(**trainer_conf.early_stopping.params)
+    # instantiate ModelCheckpoint Callback
+    os.makedirs(trainer_conf.model_checkpoint.filepath, exist_ok=True)
+    model_checkpoint = ModelCheckpoint(**trainer_conf.model_checkpoint.params)
+    # instantiate LearningRate Logger
+    lr_logger = LearningRateLogger(**trainer_conf.learning_rate_monitor.params)
+    # instantiate logger
+    logger = load_obj(trainer_conf.logger.class_name)(**trainer_conf.logger.params)
+
+    callbacks = [lr_logger]
+    logger = [logger]
+
+    trainer = pl.Trainer(
+        logger=logger,
+        checkpoint_callback=model_checkpoint,
+        early_stop_callback=early_stopping,
+        callbacks=callbacks,
+        **trainer_conf.flags
+    )
+
+    return trainer

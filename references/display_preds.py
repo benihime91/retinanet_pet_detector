@@ -101,7 +101,7 @@ class Visualizer:
             w1 = width_x
             w2 = width_y
             rect = patches.Rectangle(
-                c1, w1, w2, linewidth=2, edgecolor=rgb, facecolor="none"
+                c1, w1, w2, linewidth=6, edgecolor=rgb, facecolor="none"
             )
             # Draw the bounding box on top of the image
             a.add_patch(rect)
@@ -126,10 +126,12 @@ class Visualizer:
 
         if show:
             plt.show()
-        
+
         if save:
             os.makedirs(save_dir, exist_ok=True)
-            plt.savefig(fname=os.path.join(save_dir, fname), bbox_inches="tight", pad_inches=0,)
+            plt.savefig(
+                fname=os.path.join(save_dir, fname), bbox_inches="tight", pad_inches=0,
+            )
             logger.info(f"Results saved to {os.path.join(save_dir, fname)}")
             plt.close(fig)
 

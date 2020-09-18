@@ -69,29 +69,28 @@ hparams:
           always_apply: True
 
 trainer:
-  callbacks:
-    early_stopping:
-      class_name: pytorch_lightning.EarlyStopping
-      params:
-        mode: "max"
-        monitor: "valid_mAP"
-        patience: 3
+  early_stopping:
+    class_name: pytorch_lightning.EarlyStopping
+    params:
+      mode: "max"
+      monitor: "valid_mAP"
+      patience: 5
 
-    model_checkpoint:
-      class_name: pytorch_lightning.callbacks.ModelCheckpoint
-      params:
-        filepath: checkpoints/
-        mode: "max"
-        monitor: "valid_mAP"
-        save_top_k: 2
+  model_checkpoint:
+    class_name: pytorch_lightning.callbacks.ModelCheckpoint
+    params:
+      filepath: checkpoints/
+      mode: "max"
+      monitor: "valid_mAP"
+      save_top_k: 3
 
-    learning_rate_monitor:
-      class_name: pytorch_lightning.callbacks.LearningRateMonitor
-      params:
-        logging_interval: "step"
+  learning_rate_monitor:
+    class_name: pytorch_lightning.callbacks.LearningRateLogger
+    params:
+      logging_interval: "step"
 
   logger:
-    class_name: pytorch_lightning.loggers.TensorBoardLogger
+    class_name: pytorch_lightning.loggers.tensorboard.TensorBoardLogger
     params:
       save_dir: "logs/"
 
@@ -103,6 +102,5 @@ trainer:
     num_sanity_val_steps: 0
     profiler: False
     weights_summary: None
-    distributed_backend: "dp"
     terminate_on_nan: True
     benchmark: True
