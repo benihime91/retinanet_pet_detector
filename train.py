@@ -103,8 +103,8 @@ def _get_logger(name=None):
     formatter = _ColorfulFormatter(
         colored("[%(asctime)s %(name)s]: ", "green") + "%(message)s",
         datefmt="%m/%d %H:%M:%S",
-        root_name="retinanet",
-        abbrev_name=str("retinanet"),
+        root_name="retinanet_pet_detector",
+        abbrev_name=str("rpd"),
     )
 
     ch.setFormatter(formatter)
