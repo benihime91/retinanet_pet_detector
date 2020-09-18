@@ -119,10 +119,10 @@ def main() -> None:
             _prompt_ = "Loading model ... It might take some time to download the model if using for the 1st time.."
 
             if model_arch == "resnet18":
-                _path = "confs/resnet18.yaml"
+                _path = "config/resnet18.yaml"
 
             elif model_arch == "resnet34":
-                _path = "confs/resnet34.yaml"
+                _path = "config/resnet34.yaml"
 
             conf_dict = load_yaml_config(_path)
             conf_dict["score_thres"] = score_threshold
