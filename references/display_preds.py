@@ -132,7 +132,7 @@ class Visualizer:
                 fname=os.path.join(save_dir, fname), bbox_inches="tight", pad_inches=0,
             )
             plt.close(fig)
-            logger.log(f"Results saved to {os.path.join(save_dir, fname)}")
+            logger.info(f"Results saved to {os.path.join(save_dir, fname)}")
 
         if return_fig:
             return fig

@@ -8,12 +8,13 @@ from omegaconf import DictConfig
 from torch import nn
 from torch.utils.data import DataLoader
 
-from ..pytorch_retinanet.references import (
+from pytorch_retinanet.references import (
     CocoEvaluator,
     DetectionDataset,
     get_coco_api_from_dataset,
 )
-from ..pytorch_retinanet.retinanet.utilities import collate_fn
+from pytorch_retinanet.retinanet.utilities import collate_fn
+
 from .utils import get_tfms, load_obj
 
 

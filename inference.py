@@ -1,46 +1,39 @@
 import argparse
 from typing import *
 
-from omegaconf.omegaconf import OmegaConf
-
-from utils import detection_api, get_model, load_yaml_config
-from omegaconf import OmegaConf
+from references.utils import detection_api, get_model, load_yaml_config
 
 
 def main(args):
     import warnings
 
+    logger = logging.getLogger(__name__)
+
     warnings.filterwarnings("ignore")
-    # grab the model
+
     conf_dict = load_yaml_config(args.config)
     conf_dict["score_thres"] = args.score_thres
     conf_dict["nms_thres"] = args.iou_thres
     conf_dict["max_detections"] = args.md
 
-    pretty = OmegaConf.create(conf_dict)
-    print("[INFO] Parametes:")
-    print(pretty.pretty())
-
-    print("[INFO] Serializing model ....")
-
+    logger.info("Serializing model ")
     conf_dict = argparse.Namespace(**conf_dict)
     model = get_model(conf_dict)
-
     # grab the path to the Image file
     fname = args.image
-
     # get predictions
-    detection_api(
-        model,
-        fname,
-        save=args.save,
-        show=args.show,
-        save_dir=args.save_dir,
-        fname=args.fname,
-    )
+    detection_api(model, fname, args.save, args.show, args.fname, args.save_dir)
 
 
 if __name__ == "__main__":
+    import logging
+
+    # Set up Logging
+    logging.basicConfig(
+        format="%(asctime)s %(levelname)s: %(message)s",
+        datefmt="%m/%d/%Y %H:%M:%S",
+        level=logging.INFO,
+    )
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -67,7 +60,7 @@ if __name__ == "__main__":
         "--iou_thres",
         required=False,
         type=float,
-        default=0.3,
+        default=0.5,
         help="iou_threshold for bounding boxes",
     )
 

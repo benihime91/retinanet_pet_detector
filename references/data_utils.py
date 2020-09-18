@@ -161,8 +161,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--labels",
         type=str,
-        required=False,
-        default="../labels.names",
+        required=(action_choices[0] in argv),
         help="path to the label dictionary",
     )
     parser.add_argument(

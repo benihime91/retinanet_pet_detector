@@ -1,9 +1,9 @@
 hparams:
-  train_csv: "train.csv"
+  train_csv: "data/train.csv"
 
-  valid_csv: "valid.csv"
+  valid_csv: "data/valid.csv"
 
-  test_csv: "test.csv"
+  test_csv: "data/test.csv"
 
   train_batch_size: 4
 
