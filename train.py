@@ -57,7 +57,7 @@ def main(args: argparse.Namespace, logger: logging.Logger):
 
     # Save weights
     logger.info("Serializing model weights .... ")
-    weights = os.path.join(cfg.trainer.model_checkpoint.filepath, "weights.pt")
+    weights = os.path.join(cfg.trainer.model_checkpoint.params.filepath, "weights.pt")
     torch.save(litModule.model.state_dict(), weights)
     logger.info(f"Weights saved to {weights} .... ")
 
