@@ -17,9 +17,9 @@ hparams:
   optimizer:
     class_name: torch.optim.SGD
     params:
-      lr: ${learning_rate}
-      weight_decay: ${weight_decay}
-      momentum: ${momentum}
+      lr: ${hparams.learning_rate}
+      weight_decay: ${hparams.weight_decay}
+      momentum: ${hparams.momentum}
 
   scheduler:
     class_name: torch.optim.lr_scheduler.MultiStepLR
