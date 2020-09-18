@@ -86,7 +86,7 @@ def _get_logger(name=None):
     # Set up Logging
     name = ifnone(name, "pet-detector")
     logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)
     logger.propagate = False
 
     logging.basicConfig(
