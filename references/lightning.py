@@ -8,8 +8,11 @@ from omegaconf import DictConfig
 from torch import nn
 from torch.utils.data import DataLoader
 
-from ..pytorch_retinanet.references import (CocoEvaluator, DetectionDataset,
-                                            get_coco_api_from_dataset)
+from ..pytorch_retinanet.references import (
+    CocoEvaluator,
+    DetectionDataset,
+    get_coco_api_from_dataset,
+)
 from ..pytorch_retinanet.retinanet.utilities import collate_fn
 from .utils import get_tfms, load_obj
 
@@ -102,7 +105,10 @@ class DetectionModel(pl.LightningModule):
         images, targets, _ = batch
         targets = [{k: v for k, v in t.items()} for t in targets]
         outputs = self.model(images, targets)
-        res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
+        res = {
+            target["image_id"].item(): output
+            for target, output in zip(targets, outputs)
+        }
         self.coco_evaluator.update(res)
         return {}
 
@@ -139,7 +145,10 @@ class DetectionModel(pl.LightningModule):
         images, targets, _ = batch
         targets = [{k: v for k, v in t.items()} for t in targets]
         outputs = self.model(images, targets)
-        res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
+        res = {
+            target["image_id"].item(): output
+            for target, output in zip(targets, outputs)
+        }
         self.test_evaluator.update(res)
         return {}
 
@@ -149,7 +158,7 @@ class DetectionModel(pl.LightningModule):
         metric = self.test_evaluator.coco_eval["bbox"].stats[0]
         metric = torch.as_tensor(metric)
         logs = {"test_mAP": metric}
-        
+
         return {
             "test_mAP": metric,
             "log": logs,

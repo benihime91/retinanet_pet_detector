@@ -2,7 +2,7 @@ import importlib
 from typing import *
 
 import albumentations as A
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig
 
 
 def load_obj(obj_path: str, default_obj_path: str = "") -> Any:

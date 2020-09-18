@@ -1,3 +1,4 @@
+import argparse
 import ast
 import glob
 import logging
@@ -7,6 +8,7 @@ import xml.etree.ElementTree as ET
 from typing import *
 
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 logger = logging.getLogger(__name__)
 
@@ -94,32 +96,134 @@ def parse_data(img_dir: str, annot_dir: str, dict_path: str) -> pd.DataFrame:
     return df
 
 
+def create_splits(df: pd.DataFrame, split_sz: float = 0.3):
+    "Split given DataFrame into `split_sz`"
+    # Grab the Unique Image Idxs from the Filename
+    unique_ids = list(df.filename.unique())
+    # Split the Unique Image Idxs into Train & valid Datasets
+    train_ids, val_ids = train_test_split(
+        unique_ids, shuffle=True, random_state=42, test_size=split_sz
+    )
+    # Create Splits on the DataFrame
+    df["split"] = 0
+
+    for i, idx in enumerate(df.filename.values):
+        if idx in set(train_ids):
+            df["split"][i] = "train"
+        elif idx in set(val_ids):
+            df["split"][i] = "val"
+
+    # Split the DataFrame into Train and Valid DataFrames
+    df_trn, df_val = df.loc[df["split"] == "train"], df.loc[df["split"] == "val"]
+
+    df_trn, df_val = df_trn.reset_index(drop=True), df_val.reset_index(drop=True)
+    # drop the extra redundent column
+    df_trn.drop(columns=["split"], inplace=True)
+    df_val.drop(columns=["split"], inplace=True)
+
+    return df_trn, df_val
+
+
 if __name__ == "__main__":
     import argparse
+    import logging
+    import os
+    from sys import argv
+    import warnings
+
+    warnings.filterwarnings("ignore")
+
+    # Set up Logging
+    logging.basicConfig(
+        format="%(asctime)s %(levelname)s: %(message)s",
+        datefmt="%m/%d/%Y %H:%M:%S",
+        level=logging.INFO,
+    )
+    logger = logging.getLogger(__name__)
 
     parser = argparse.ArgumentParser()
+    action_choices = ["create", "split"]
+    parser.add_argument("--action", choices=action_choices, default=action_choices[0])
+
     parser.add_argument(
-        "img_dir", type=str, required=True, help="path to the image directory"
+        "--img_dir",
+        type=str,
+        required=(action_choices[0] in argv),
+        help="path to the image directory",
     )
     parser.add_argument(
-        "annot_dir", type=str, required=True, help="path to the annotation directory"
+        "--annot_dir",
+        type=str,
+        required=(action_choices[0] in argv),
+        help="path to the annotation directory",
     )
+
     parser.add_argument(
-        "output_dir",
+        "--labels",
         type=str,
         required=False,
-        default="pet_labels.csv",
-        help="path to the output csv file",
-    )
-    parser.add_argument(
-        "labels",
-        type=str,
-        required=False,
-        default="labels.names",
+        default="../labels.names",
         help="path to the label dictionary",
     )
-    args = parser.parse_args()
+    parser.add_argument(
+        "--csv",
+        default="../data/data-full.csv",
+        type=str,
+        required=(action_choices[1] in argv),
+        help="path to the csv file",
+    )
+    parser.add_argument(
+        "--valid_size",
+        type=float,
+        required=(action_choices[1] in argv),
+        help="size of the validation set relative to the train set",
+        default=0.2,
+    )
+    parser.add_argument(
+        "--test_size",
+        type=float,
+        required=(action_choices[1] in argv),
+        help="size of the test set relative to the validation set",
+        default=0.5,
+    )
 
-    df = parse_data(args.img_dir, args.annot_dir, args.labels)
-    df.to_csv(args.output_dir, index=False)
-    logger.info(f"Csv file save to {args.output_dir}")
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        required=False,
+        default="../data/",
+        help="path to the output csv file",
+    )
+
+    args = parser.parse_args()
+    if action_choices[0] in argv:
+        logger.info("Convert xml files to a csv file")
+        df = parse_data(args.img_dir, args.annot_dir, args.labels)
+        os.makedirs(args.output_dir, exist_ok=True)
+        pth = os.path.join(args.output_dir, "data-full.csv")
+        df.to_csv(pth, index=False)
+        logger.info(f"csv file saved as {pth}")
+
+    elif action_choices[1] in argv:
+        logger.info(f"path to the given csv file : {args.csv}")
+        logger.info("Creating train, validation and test splits")
+
+        df = pd.read_csv(args.csv)
+        # Create Splits in the DataFrame
+        df_train, df_validation = create_splits(df, split_sz=args.valid_size)
+        df_test, df_validation = create_splits(df, split_sz=args.test_size)
+
+        l_tr, l_val, l_test = (
+            len(df_train.filename.unique()),
+            len(df_validation.filename.unique()),
+            len(df_test.filename.unique()),
+        )
+        logger.info(f"Number of training examples={l_tr}")
+        logger.info(f"Number of validation examples={l_val}")
+        logger.info(f"Number of test examples={l_test}")
+
+        df_train.to_csv(os.path.join(args.output_dir, "train.csv"), index=False)
+        df_validation.to_csv(os.path.join(args.output_dir, "valid.csv"), index=False)
+        df_test.to_csv(os.path.join(args.output_dir, "test.csv"), index=False)
+
+        logger.info(f"Files saved to {args.output_dir}")
