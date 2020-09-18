@@ -17,13 +17,18 @@ from references import DetectionModel, initialize_trainer
 def main(args, logger):
     cfg = OmegaConf.load(args.config)
     if args.disp:
+        logger.name = "configurations"
         logger.info("Config:")
         print(OmegaConf.to_yaml(cfg))
 
     # instantiate Retinanet model
+    logger.name = "retinanet"
     model = Retinanet(**cfg.model, logger=logger)
     logger.info("Model: ")
     print(model)
+
+
+    logger.name = "pet-detector"
 
     # Instantiate LightningModel & Trainer
     litModule = DetectionModel(model, cfg.hparams)
@@ -74,7 +79,7 @@ class _ColorfulFormatter(logging.Formatter):
 
 def _get_logger(name=None):
     # Set up Logging
-    name = ifnone(name, "retinanet")
+    name = ifnone(name, "pet-detector")
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
