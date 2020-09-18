@@ -19,9 +19,7 @@ from .utils import get_tfms, load_obj
 
 
 class DetectionModel(pl.LightningModule):
-    def __init__(
-        self, model: nn.Module, hparams: Union[Dict, argparse.Namespace, DictConfig]
-    ):
+    def __init__(self, model: nn.Module, hparams: Union[Dict, argparse.Namespace, DictConfig]):
         super(DetectionModel, self).__init__()
         self.model = model
         self.hparams = hparams

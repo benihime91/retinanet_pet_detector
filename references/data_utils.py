@@ -65,7 +65,7 @@ def parse_data(img_dir: str, annot_dir: str, dict_path: str) -> pd.DataFrame:
     and generates a DataFrame. Where each entry corresponds
     to the path where images are stored and each image 
     has a bounding box denoted by xmin, ymin, xmax, ymax
-    Integer targets are stored under targets.
+    Integer labels are stored under labels.
     
     Args:
      img_dit   (str): Directory where the images are stored.
@@ -90,8 +90,8 @@ def parse_data(img_dir: str, annot_dir: str, dict_path: str) -> pd.DataFrame:
     # Read in the label dictionary
     label_dict = rev_dict(read_dict(fname=dict_path))
     # convert class labels to integers
-    df["targets"] = [label_dict[idx] for idx in df["classes"].values]
-    logger.info(f"Number of unique classes found: {len(df['targets'].unique())}")
+    df["labels"] = [label_dict[idx] for idx in df["classes"].values]
+    logger.info(f"Number of unique classes found: {len(df['labels'].unique())}")
 
     return df
 
@@ -101,9 +101,18 @@ def create_splits(df: pd.DataFrame, split_sz: float = 0.3):
     # Grab the Unique Image Idxs from the Filename
     unique_ids = list(df.filename.unique())
     # Split the Unique Image Idxs into Train & valid Datasets
-    train_ids, val_ids = train_test_split(
-        unique_ids, shuffle=True, random_state=42, test_size=split_sz
-    )
+    try:
+        train_ids, val_ids = train_test_split(
+            unique_ids,
+            shuffle=True,
+            random_state=42,
+            test_size=split_sz,
+            stratify=df.labels,
+        )
+    except:
+        train_ids, val_ids = train_test_split(
+            unique_ids, shuffle=True, random_state=42, test_size=split_sz,
+        )
     # Create Splits on the DataFrame
     df["split"] = 0
 
@@ -131,15 +140,12 @@ if __name__ == "__main__":
     from sys import argv
     import warnings
 
-    warnings.filterwarnings("ignore")
-
     # Set up Logging
     logging.basicConfig(
-        format="%(asctime)s %(levelname)s: %(message)s",
-        datefmt="%m/%d/%Y %H:%M:%S",
-        level=logging.INFO,
+        format="%(levelname)s: %(message)s", level=logging.INFO,
     )
     logger = logging.getLogger(__name__)
+    warnings.filterwarnings("ignore")
 
     parser = argparse.ArgumentParser()
     action_choices = ["create", "split"]
@@ -188,20 +194,23 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--output_dir",
-        type=str,
         required=False,
-        default="../data/",
+        default=None,
         help="path to the output csv file",
     )
 
     args = parser.parse_args()
     if action_choices[0] in argv:
-        logger.info("Convert xml files to a csv file")
+        logger.info("Converting xml files to a csv file")
         df = parse_data(args.img_dir, args.annot_dir, args.labels)
-        os.makedirs(args.output_dir, exist_ok=True)
-        pth = os.path.join(args.output_dir, "data-full.csv")
-        df.to_csv(pth, index=False)
-        logger.info(f"csv file saved as {pth}")
+        if args.output_dir is not None:
+            os.makedirs(args.output_dir, exist_ok=True)
+            pth = os.path.join(args.output_dir, "data-full.csv")
+            df.to_csv(pth, index=False)
+            logger.info(f"csv file saved as {pth}")
+        else:
+            df.to_csv("data-full.csv", index=False)
+            logger.info("csv file saved to current directory as `data-full.csv`")
 
     elif action_choices[1] in argv:
         logger.info(f"path to the given csv file : {args.csv}")
@@ -221,8 +230,16 @@ if __name__ == "__main__":
         logger.info(f"Number of validation examples={l_val}")
         logger.info(f"Number of test examples={l_test}")
 
-        df_train.to_csv(os.path.join(args.output_dir, "train.csv"), index=False)
-        df_validation.to_csv(os.path.join(args.output_dir, "valid.csv"), index=False)
-        df_test.to_csv(os.path.join(args.output_dir, "test.csv"), index=False)
+        if args.output_dir is not None:
+            df_train.to_csv(os.path.join(args.output_dir, "train.csv"), index=False)
+            df_validation.to_csv(
+                os.path.join(args.output_dir, "valid.csv"), index=False
+            )
+            df_test.to_csv(os.path.join(args.output_dir, "test.csv"), index=False)
+            logger.info(f"Files saved to {args.output_dir}")
+        else:
+            df_train.to_csv("train.csv", index=False)
+            df_validation.to_csv("valid.csv", index=False)
+            df_test.to_csv("test.csv", index=False)
+            logger.info("Files saved to current directory")
 
-        logger.info(f"Files saved to {args.output_dir}")

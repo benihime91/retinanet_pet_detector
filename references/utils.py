@@ -16,7 +16,7 @@ from pytorch_retinanet.retinanet.models import Retinanet
 from .display_preds import Visualizer
 
 # Path to the Label Dictionary
-LABEL_PATH = "data/labels.names"
+LABEL_PATH = "labels.names"
 
 
 def load_obj(obj_path: str, default_obj_path: str = "") -> Any:
@@ -90,9 +90,6 @@ def get_label_dict(fname):
 
 # Dictionary conating a mapping of the Labels
 label_dict = get_label_dict(LABEL_PATH)
-
-# Instantiate the visualizer
-viz = Visualizer(class_names=label_dict)
 
 transforms = A.Compose([A.ToFloat(), ToTensorV2()])
 
@@ -176,9 +173,12 @@ def detection_api(
     """
     # Extract the predicitons for given Image
     bb, cls, sc = get_preds(model, img)
-
+    # Instantiate the visualizer
+    viz = Visualizer(class_names=label_dict)
     # Load in the image
     img = Image.open(img).convert("RGB")
     img = np.array(img)
     # Draw the bounding boxes over the loaded image
-    viz.draw_bboxes(img, bb, cls, sc, save=save, show=show, save_dir=save_dir, fname=fname)
+    viz.draw_bboxes(
+        img, bb, cls, sc, save=save, show=show, save_dir=save_dir, fname=fname
+    )
