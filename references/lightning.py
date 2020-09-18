@@ -201,7 +201,7 @@ def initialize_trainer(trainer_conf: DictConfig) -> pl.Trainer:
         checkpoint_callback=model_checkpoint,
         early_stop_callback=early_stopping,
         callbacks=callbacks,
-        **trainer_conf.flags
+        **trainer_conf.flags,
     )
 
     return trainer
