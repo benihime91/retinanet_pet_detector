@@ -103,9 +103,7 @@ class Visualizer:
             c1 = (x1, y2)
             w1 = width_x
             w2 = width_y
-            rect = patches.Rectangle(
-                c1, w1, w2, linewidth=6, edgecolor=rgb, facecolor="none"
-            )
+            rect = patches.Rectangle(c1, w1, w2, linewidth=4, edgecolor=rgb, facecolor="none")
             # Draw the bounding box on top of the image
             a.add_patch(rect)
 
