@@ -25,6 +25,8 @@ hparams:
     params:
       milestones: [32, 55]
       gamma: 0.1
+    interval: "epoch"
+    frequency: 1
 
   augmentation:
     train:
