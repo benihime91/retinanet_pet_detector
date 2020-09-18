@@ -6,9 +6,8 @@ import numpy as np
 import streamlit as st
 from PIL import Image
 
-from display_preds import Visualizer
-from inference import load_yaml_config
-from utils import get_model, get_preds, label_dict
+from references.display_preds import Visualizer
+from references.utils import get_model, get_preds, label_dict, load_yaml_config
 
 warnings.filterwarnings("ignore")
 

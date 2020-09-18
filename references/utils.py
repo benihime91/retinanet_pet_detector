@@ -181,6 +181,4 @@ def detection_api(
     img = Image.open(img).convert("RGB")
     img = np.array(img)
     # Draw the bounding boxes over the loaded image
-    viz.draw_bboxes(
-        img, bb, cls, sc, save=save, show=show, save_dir=save_dir, fname=fname
-    )
+    viz.draw_bboxes(img, bb, cls, sc, save=save, show=show, save_dir=save_dir, fname=fname)

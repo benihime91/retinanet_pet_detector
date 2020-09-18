@@ -126,13 +126,12 @@ class Visualizer:
 
         if show:
             plt.show()
+        
         if save:
             os.makedirs(save_dir, exist_ok=True)
-            plt.savefig(
-                fname=os.path.join(save_dir, fname), bbox_inches="tight", pad_inches=0,
-            )
-            plt.close(fig)
+            plt.savefig(fname=os.path.join(save_dir, fname), bbox_inches="tight", pad_inches=0,)
             logger.info(f"Results saved to {os.path.join(save_dir, fname)}")
+            plt.close(fig)
 
         if return_fig:
             return fig
