@@ -1,6 +1,7 @@
 model:
   backbone_kind: "resnet34"
   num_classes: 37
+
 hparams:
   train_csv: "data/train.csv"
   valid_csv: "data/valid.csv"
@@ -97,10 +98,9 @@ trainer:
   flags:
     check_val_every_n_epoch: 5
     max_epochs: 100
-    precision: 16
-    gpus: 1
+    precision: 32
+    gpus: 0
     num_sanity_val_steps: 0
     profiler: False
-    weights_summary: None
     terminate_on_nan: True
     benchmark: True

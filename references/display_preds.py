@@ -12,17 +12,20 @@ from pytorch_retinanet.retinanet.utilities import ifnone
 # Turn interactive plotting off
 plt.ioff()
 
-logger = logging.getLogger(__name__)
-
-
 class Visualizer:
-    def __init__(self, class_names: Union[Dict[int, str], List[str]]) -> None:
+    def __init__(self, class_names: Union[Dict[int, str], List[str]], logger=None):
         self.c_names = class_names
         self.colors = np.array(
             [[1, 0, 1], [0, 0, 1], [0, 1, 1], [0, 1, 0], [1, 1, 0], [1, 0, 0]],
             dtype=np.float32,
         )
-        logger.info("Visualizer Initialized")
+        if logger is None:
+            self.logger = logging.getLogger("retinanet")
+        else:
+            self.logger = logger
+            self.logger.name = "visualizer"
+        
+        self.logger.info("visualizer initialized")
 
     def _get_color(self, c, x, max_val):
         ratio = float(x) / max_val * 5
@@ -63,7 +66,7 @@ class Visualizer:
         a.imshow(img)
 
         scores = ifnone(scores, np.repeat(1.0, axis=0, repeats=len(boxes)))
-        logger.info(f"Found {len(boxes)} bounding boxes on the given image")
+        self.logger.info(f"Found {len(boxes)} bounding boxes on the given image")
 
         # Plot the bounding boxes and corresponding labels on top of the image
         for i in range(len(boxes)):
@@ -129,10 +132,8 @@ class Visualizer:
 
         if save:
             os.makedirs(save_dir, exist_ok=True)
-            plt.savefig(
-                fname=os.path.join(save_dir, fname), bbox_inches="tight", pad_inches=0,
-            )
-            logger.info(f"Results saved to {os.path.join(save_dir, fname)}")
+            plt.savefig(fname=os.path.join(save_dir, fname), bbox_inches="tight", pad_inches=0,)
+            self.logger.info(f"Results saved to {os.path.join(save_dir, fname)}")
             plt.close(fig)
 
         if return_fig:

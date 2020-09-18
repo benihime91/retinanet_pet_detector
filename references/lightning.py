@@ -178,7 +178,7 @@ class DetectionModel(pl.LightningModule):
         }
 
 
-def initialize_trainer(trainer_conf: DictConfig) -> pl.Trainer:
+def initialize_trainer(trainer_conf: DictConfig, **kwargs) -> pl.Trainer:
     """
     Instantiates a Lightning Trainer
     from given config file 
@@ -186,7 +186,7 @@ def initialize_trainer(trainer_conf: DictConfig) -> pl.Trainer:
     # instantiate EarlyStoppping Callback
     early_stopping = EarlyStopping(**trainer_conf.early_stopping.params)
     # instantiate ModelCheckpoint Callback
-    os.makedirs(trainer_conf.model_checkpoint.filepath, exist_ok=True)
+    os.makedirs(trainer_conf.model_checkpoint.params.filepath, exist_ok=True)
     model_checkpoint = ModelCheckpoint(**trainer_conf.model_checkpoint.params)
     # instantiate LearningRate Logger
     lr_logger = LearningRateLogger(**trainer_conf.learning_rate_monitor.params)
@@ -202,6 +202,7 @@ def initialize_trainer(trainer_conf: DictConfig) -> pl.Trainer:
         early_stop_callback=early_stopping,
         callbacks=callbacks,
         **trainer_conf.flags,
+        **kwargs,
     )
 
     return trainer
