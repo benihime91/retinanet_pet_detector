@@ -20,24 +20,25 @@ def main(args: argparse.Namespace, logger: logging.Logger):
     # set lightning seed to results are reproducible
     seed = 123
     pl.seed_everything(123)
-    logger.info(f"Seed : {seed}")
+    logger.name = "lightning"
+    logger.info(f"Random seed = {seed}")
 
     # load the config file
     cfg = OmegaConf.load(args.config)
     if args.disp:
         logger.name = "configurations"
-        logger.info("Config:")
+        logger.info("Configs:")
         print(OmegaConf.to_yaml(cfg))
 
     # instantiate Retinanet model
     logger.name = "retinanet"
     model = Retinanet(**cfg.model, logger=logger)
-    logger.info(f"Model: \n, {model}")
+    logger.info(f"Model: \n {model}")
 
     logger.name = "pet-detector"
     # Instantiate LightningModel & Trainer
     litModule = DetectionModel(model, cfg.hparams)
-    trainer = initialize_trainer(cfg.trainer, weights_summary=None)
+    trainer = initialize_trainer(cfg.trainer)
 
     # Train and validation
     strt_time = datetime.datetime.now()
