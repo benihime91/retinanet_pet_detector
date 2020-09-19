@@ -170,7 +170,8 @@ In the same the other flags in `main.yaml` can be modified.
   
 ## Results:
 
-- Results for RetinaNet model with resnet34 backbone:
+- Results for RetinaNet model with resnet34 backbone:  
+
   ```bash
   [09/19 13:37:58 references.lightning]: Evaluation results for bbox: 
   IoU metric: bbox
