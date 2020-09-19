@@ -53,7 +53,9 @@ class DetectionModel(pl.LightningModule):
         }
 
         self.fancy_logger.info(f"Optimizer: {self.optimizer.__class__.__name__}")
-        self.fancy_logger.info(f"Scheduler: {self.scheduler['scheduler'].__class__.__name__}")
+        self.fancy_logger.info(
+            f"Scheduler: {self.scheduler['scheduler'].__class__.__name__}"
+        )
 
         return [self.optimizer], [self.scheduler]
 
@@ -142,9 +144,8 @@ class DetectionModel(pl.LightningModule):
         return {}
 
     def validation_epoch_end(self, outputs, *args, **kwargs):
-        self.fancy_logger.info("Evaluating predictions ...")
-        self.fancy_logger.info("Evaluation results for bbox: ")
         self.coco_evaluator.accumulate()
+        self.fancy_logger.info("Evaluation results for bbox: ")
         self.coco_evaluator.summarize()
         metric = self.coco_evaluator.coco_eval["bbox"].stats[0]
         metric = torch.as_tensor(metric)
@@ -179,10 +180,9 @@ class DetectionModel(pl.LightningModule):
         return {}
 
     def test_epoch_end(self, outputs, *args, **kwargs):
-        self.fancy_logger.info("Evaluating predictions ...")
-        self.fancy_logger.info("Evaluation results for bbox: ")
         # coco results
         self.test_evaluator.accumulate()
+        self.fancy_logger.info("Evaluation results for bbox: ")
         self.test_evaluator.summarize()
         metric = self.test_evaluator.coco_eval["bbox"].stats[0]
         metric = torch.as_tensor(metric)
@@ -192,6 +192,30 @@ class DetectionModel(pl.LightningModule):
             "log": logs,
             "progress_bar": logs,
         }
+
+
+class LogCallback(pl.Callback):
+    def __init__(self):
+        super().__init__()
+        self.logger = _get_logger(__name__)
+
+    def on_train_start(self, trainer, pl_module):
+        self.logger.info("Starting training from iteration 0 ")
+
+    def on_validation_start(self, trainer, pl_module):
+        self.logger.info(f"Start Inference on {len(pl_module.val_dataloader)} images ...")
+
+    def on_validation_epoch_start(self, trainer, pl_module):
+        self.logger.info("Evaluating predictions ...")
+
+    def on_test_start(self, trainer, pl_module):
+        self.logger.info(f"Start Inference on {len(pl_module.test_dataloader)} images ...")
+
+    def on_test_epoch_start(self, trainer, pl_module):
+        self.logger.info("Evaluating predictions ...")
+
+    def on_init_end(self, trainer):
+        self.logger.info("serializing model ...")
 
 
 def initialize_trainer(trainer_conf: DictConfig, **kwargs) -> pl.Trainer:
@@ -204,12 +228,12 @@ def initialize_trainer(trainer_conf: DictConfig, **kwargs) -> pl.Trainer:
     # instantiate ModelCheckpoint Callback
     os.makedirs(trainer_conf.model_checkpoint.params.filepath, exist_ok=True)
     model_checkpoint = ModelCheckpoint(**trainer_conf.model_checkpoint.params)
-    # instantiate LearningRate Logger
+    # instantiate callbacks
     lr_logger = LearningRateLogger(**trainer_conf.learning_rate_monitor.params)
-    # instantiate logger
     logger = load_obj(trainer_conf.logger.class_name)(**trainer_conf.logger.params)
+    log_cb = LogCallback()
 
-    callbacks = [lr_logger]
+    callbacks = [lr_logger, log_cb]
     logger = [logger]
 
     trainer = pl.Trainer(

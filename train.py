@@ -42,15 +42,13 @@ def main(args: argparse.Namespace, seed: int = 123):
     trainer = initialize_trainer(cfg.trainer, weights_summary=None)
 
     # Train and validation
-    strt_time = datetime.datetime.now()
-    logger.info(f"Starting training from iteration {0}")
+    strt_time_1 = datetime.datetime.now()
     trainer.fit(litModule)
     end_tim = datetime.datetime.now()
-    tot = end_tim - strt_time
+    tot = end_tim - strt_time_1
     logger.info(f"Total training time:  {tot}")
 
     # Test
-    logger.info("Evaluation results for bbox on test set: ")
     strt_time = datetime.datetime.now()
     trainer.test(litModule)
     end_tim = datetime.datetime.now()
@@ -58,10 +56,12 @@ def main(args: argparse.Namespace, seed: int = 123):
     logger.info(f"Total inference time:  {tot}")
 
     # Save weights
-    logger.info("Serializing model weights .... ")
     weights = os.path.join(cfg.trainer.model_checkpoint.params.filepath, "weights.pt")
     torch.save(litModule.model.state_dict(), weights)
     logger.info(f"Weights saved to {weights} .... ")
+    logger.info("Cleaning up .....")
+    t_end = datetime.datetime.now()
+    logger.info(f"Overall time elasped : {strt_time_1 - t_end}")
 
 
 if __name__ == "__main__":
