@@ -6,19 +6,14 @@ import pandas as pd
 import pytorch_lightning as pl
 import torch
 from omegaconf import DictConfig
-from pytorch_lightning.callbacks import (
-    EarlyStopping,
-    LearningRateLogger,
-    ModelCheckpoint,
-)
+from pytorch_lightning.callbacks import (EarlyStopping, LearningRateLogger,
+                                         ModelCheckpoint)
 from torch import nn
 from torch.utils.data import DataLoader
 
-from pytorch_retinanet.references import (
-    CocoEvaluator,
-    DetectionDataset,
-    get_coco_api_from_dataset,
-)
+from pytorch_retinanet.references import (CocoEvaluator, DetectionDataset,
+                                          get_coco_api_from_dataset)
+
 from pytorch_retinanet.retinanet.utilities import collate_fn
 
 from .data_utils import _get_logger
@@ -200,8 +195,9 @@ class LogCallback(pl.Callback):
     def on_test_epoch_start(self, trainer, pl_module):
         pl_module.fancy_logger.info("Evaluating predictions ...")
 
-    def on_test_start(self, trainer, pl_module):
+    def on_test_end(self, trainer, pl_module):
         pl_module.fancy_logger.info("Evaluating Done !")
+    
 
 
 def initialize_trainer(trainer_conf: DictConfig, **kwargs) -> pl.Trainer:

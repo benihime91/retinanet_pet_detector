@@ -1,4 +1,6 @@
 ## For resnet34
+# url: should contain either the url where the model weights are saved
+# or the path to the model weights
 model_backbone: "resnet34"
 url: https://github.com/benihime91/retinanet_pet_detector/releases/download/v0.0.1/resnet34-2020-08-09-ffdde352.pth
 num_classes: 37

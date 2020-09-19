@@ -44,9 +44,7 @@ def load_image() -> np.array:
 # Draw prediciton on the given image
 def draw_preds_on_image(uploaded_image, boxes, labels, scores):
     "draws predicitons on the Given Image"
-    image = viz.draw_bboxes(
-        uploaded_image, boxes, labels, scores, save=False, show=False, return_fig=True
-    )
+    image = viz.draw_bboxes(uploaded_image, boxes, labels, scores, save=False, show=False, return_fig=True)
     return image
 
 
@@ -93,14 +91,14 @@ def main() -> None:
             label="score threshold for detections (Detections with score < score_threshold are discarded)",
             min_value=0.1,
             max_value=1.0,
-            value=0.6,
+            value=0.7,
         )
 
         nms_thres = st.slider(
             label="iou threshold for detection bounding boxes",
             min_value=0.1,
             max_value=1.0,
-            value=0.3,
+            value=0.4,
         )
 
         md = st.slider(

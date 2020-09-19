@@ -111,22 +111,26 @@ def load_yaml_config(path) -> Dict:
 
 
 def get_model(args: argparse.Namespace):
-    "returns a pre-trained retinanet model"
+    """
+    returns a pre-trained retinanet model
+    after loading the weights either from a url 
+    or from a given weights file.
+    """
     logger = _get_logger(name=__name__)
     logger.name = "pytorch_retinanet.retinanet.models"
-    
-    model = Retinanet(
-        args.num_classes,
-        args.model_backbone,
-        score_thres=args.score_thres,
-        nms_thres=args.nms_thres,
-        logger=logger,
-    )
+    # Instantiate model
+    m = Retinanet(args.num_classes, args.model_backbone, score_thres=args.score_thres, nms_thres=args.nms_thres, logger=logger,)
 
     logger.name = __name__
-    state_dict = torch.hub.load_state_dict_from_url(args.url, map_location="cpu")
-    model.load_state_dict(state_dict)
-    return model
+    # if url is given load from url
+    try:
+        state_dict = torch.hub.load_state_dict_from_url(args.url, map_location="cpu")
+    # else load from given weights path
+    except:
+        state_dict = torch.load(args.url, map_location="cpu")
+    m.load_state_dict(state_dict)
+    
+    return m 
 
 
 @torch.no_grad()
@@ -161,15 +165,7 @@ def get_preds(model: nn.Module, image: Union[np.array, str], **kwargs) -> Tuple[
     return boxes, clas, scores
 
 
-def detection_api(
-    model: torch.nn.Module,
-    img: str,
-    save: bool = True,
-    show: bool = False,
-    fname: str = "res.png",
-    save_dir: str = "outputs",
-):
-
+def detection_api(model, img: str, save: bool = True, show: bool = False, fname: str = "res.png", save_dir: str = "outputs",):
     """
     Generates & draws the bbox predictions over the given image
     using the given retinanet model.

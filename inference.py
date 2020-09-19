@@ -10,6 +10,7 @@ def main(args):
 
     logger = _get_logger(__name__)
     warnings.filterwarnings("ignore")
+    logger.info(f"Arguments: \n{args}")
 
     conf_dict = load_yaml_config(args.config)
     conf_dict["score_thres"] = args.score_thres
@@ -22,7 +23,14 @@ def main(args):
     # grab the path to the Image file
     fname = args.image
     # get predictions
-    detection_api(model, fname, args.save, args.show, args.fname, args.save_dir)
+    detection_api(
+        model,
+        fname,
+        save=args.save,
+        show=args.show,
+        fname=args.fname,
+        save_dir=args.save_dir,
+    )
 
 
 if __name__ == "__main__":
@@ -65,19 +73,16 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--save",
-        type=bool,
-        required=False,
-        help="wether to save the ouput predictions",
-        default=True,
-    )
-
-    parser.add_argument(
         "--show",
-        type=bool,
-        required=False,
         help="wether to display the output predicitons",
+        action="store_true",
         default=False,
+    )
+    parser.add_argument(
+        "--save",
+        help="wether to save the ouput predictions",
+        action="store_true",
+        default=True,
     )
 
     parser.add_argument(

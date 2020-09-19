@@ -128,14 +128,15 @@ class Visualizer:
         a.get_yaxis().set_visible(False)
         plt.axis("off")
 
-        if show:
-            plt.show()
-
         if save:
             os.makedirs(save_dir, exist_ok=True)
             pth = os.path.join(save_dir, fname)
             plt.savefig(pth, bbox_inches="tight", pad_inches=0,)
             self.logger.info(f"Results saved to {os.path.join(save_dir, fname)}")
+
+        if show:
+            self.logger.info(f"Displaying Results ....")
+            plt.show()
 
         if return_fig:
             return fig
