@@ -76,19 +76,23 @@ class DetectionModel(pl.LightningModule):
         self.trn_df = pd.read_csv(self.hparams.train_csv)
         self.fancy_logger.info(
             f"Serialized train dataset from {self.hparams.train_csv}"
-            f"Serialized dataset takes {os.path.getsize(self.hparams.train_csv/(1024*1024))} MiB"
+        )
+        self.fancy_logger.info(
+            f"Serialized dataset takes {os.path.getsize(self.hparams.train_csv)/(1024*1024):.2f} MiB"
         )
 
         self.val_df = pd.read_csv(self.hparams.valid_csv)
         self.fancy_logger.info(
             f"Serialized validation dataset from {self.hparams.valid_csv}"
-            f"Serialized dataset takes {os.path.getsize(self.hparams.valid_csv/(1024*1024))} MiB"
+        )
+        self.fancy_logger.info(
+            f"Serialized dataset takes {os.path.getsize(self.hparams.valid_csv)/(1024*1024):.2f} MiB"
         )
 
         self.test_df = pd.read_csv(self.hparams.test_csv)
+        self.fancy_logger.info(f"Serialized test dataset from {self.hparams.test_csv}")
         self.fancy_logger.info(
-            f"Serialized test dataset from {self.hparams.test_csv}"
-            f"Serialized dataset takes {os.path.getsize(self.hparams.test_csv/(1024*1024))} MiB"
+            f"Serialized dataset takes {os.path.getsize(self.hparams.test_csv)/(1024*1024):.2f} MiB"
         )
 
     # ===================================================== #
