@@ -4,18 +4,20 @@ import glob
 import logging
 import os
 import re
+import sys
 import xml.etree.ElementTree as ET
 from typing import *
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from termcolor import colored
-from pytorch_retinanet.retinanet.utilities import ifnone
+
 
 # Fancy Logging
 def _get_logger(name=None):
     # Set up Logging
-    name = ifnone(name, __name__)
+    if name is None:
+        name = __name__
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
     logger.propagate = False
@@ -23,13 +25,11 @@ def _get_logger(name=None):
     logging.basicConfig(
         format="[%(asctime)s] %(name)s %(levelname)s: %(message)s",
         datefmt="%m/%d %H:%M:%S",
-        level=logging.DEBUG,
+        level=logging.INFO,
     )
-    plain_formatter = logging.Formatter(
-        "[%(asctime)s] %(name)s %(levelname)s: %(message)s", datefmt="%m/%d %H:%M:%S"
-    )
+
     ch = logging.StreamHandler(stream=sys.stdout)
-    ch.setLevel(logging.DEBUG)
+    ch.setLevel(logging.INFO)
     formatter = _ColorfulFormatter(
         colored("[%(asctime)s %(name)s]: ", "green") + "%(message)s",
         datefmt="%m/%d %H:%M:%S",

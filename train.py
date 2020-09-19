@@ -2,26 +2,23 @@ import argparse
 import datetime
 import logging
 import os
-import sys
 import warnings
 
+import pytorch_lightning as pl
 import torch
 from omegaconf import OmegaConf
-from termcolor import colored
 
 from pytorch_retinanet.retinanet.models import Retinanet
-from pytorch_retinanet.retinanet.utilities import ifnone
 from references import DetectionModel, initialize_trainer
-from references.data_utils import _ColorfulFormatter, _get_logger
+from references.data_utils import _get_logger
 
 
-def main(args: argparse.Namespace, logger: logging.Logger):
-    import pytorch_lightning as pl
+def main(args: argparse.Namespace, seed: int = 123):
+    logger = _get_logger(name=__name__)
 
     # set lightning seed to results are reproducible
-    seed = 123
-    pl.seed_everything(123)
-    logger.name = "lightning"
+    pl.seed_everything(seed)
+    logger.name = "Lightning"
     logger.info(f"Random seed = {seed}")
 
     # load the config file
@@ -32,11 +29,11 @@ def main(args: argparse.Namespace, logger: logging.Logger):
         print(OmegaConf.to_yaml(cfg))
 
     # instantiate Retinanet model
-    logger.name = "retinanet"
+    logger.name = "pytorch_retinanet.retinanet.models"
     model = Retinanet(**cfg.model, logger=logger)
     logger.info(f"Model: \n {model}")
 
-    logger.name = "pet-detector"
+    logger.name = "retinanet_pet_detector"
     # Instantiate LightningModel & Trainer
     litModule = DetectionModel(model, cfg.hparams)
     trainer = initialize_trainer(cfg.trainer, weights_summary=None)
@@ -81,6 +78,4 @@ if __name__ == "__main__":
     )
 
     arguments = parser.parse_args()
-    logger = _get_logger()
-
-    main(args=arguments, logger=logger)
+    main(args=arguments)
