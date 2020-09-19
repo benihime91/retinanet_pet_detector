@@ -70,22 +70,25 @@ class DetectionModel(pl.LightningModule):
         # instantiate the transforms
         self.tfms = get_tfms(self.hparams)
         self.fancy_logger.info(
-            f"[Augmentations used in training]: {list(self.tfms['train'].transforms)}"
+            f"Augmentations used in training: {list(self.tfms['train'].transforms)}"
         )
         # load in the csv files
         self.trn_df = pd.read_csv(self.hparams.train_csv)
         self.fancy_logger.info(
-            f"[Serialized train dataset from {self.hparams.train_csv}]"
+            f"Serialized train dataset from {self.hparams.train_csv}"
+            f"Serialized dataset takes {os.path.getsize(self.hparams.train_csv/(1024*1024))} MiB"
         )
 
         self.val_df = pd.read_csv(self.hparams.valid_csv)
         self.fancy_logger.info(
-            f"[Serialized validation dataset from {self.hparams.valid_csv}]"
+            f"Serialized validation dataset from {self.hparams.valid_csv}"
+            f"Serialized dataset takes {os.path.getsize(self.hparams.valid_csv/(1024*1024))} MiB"
         )
 
         self.test_df = pd.read_csv(self.hparams.test_csv)
         self.fancy_logger.info(
-            f"[Serialized test dataset from {self.hparams.test_csv}]"
+            f"Serialized test dataset from {self.hparams.test_csv}"
+            f"Serialized dataset takes {os.path.getsize(self.hparams.test_csv/(1024*1024))} MiB"
         )
 
     # ===================================================== #
