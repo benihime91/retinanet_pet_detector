@@ -77,8 +77,9 @@ def main(args: argparse.Namespace, seed: int = 123):
     logger.info(f"Total inference time:  {tot}")
 
     # Save weights
-    weights = os.path.join(cfg.trainer.model_checkpoint.params.filepath, "weights.pt")
-    torch.save(litModule.model.state_dict(), weights)
+    weights = os.path.join(cfg.trainer.model_checkpoint.params.filepath, "weights.pth")
+    # NB: use_new_zipfile_serialization = True causes problems while loading the model
+    torch.save(litModule.model.state_dict(), weights, _use_new_zipfile_serialization=False)
     logger.info("serializing model state dict ...")
     logger.info(f"Weights saved to {weights} .... ")
     logger.info("Cleaning up .....")

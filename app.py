@@ -16,8 +16,6 @@ DEVICE = "cpu"
 viz = Visualizer(label_dict)
 
 
-# load model with @st.cache so it doesn't take a long time each time
-@st.cache(allow_output_mutation=True)
 def load_model(args: argparse.Namespace):
     " loads in the pre-trained RetinaNet Model "
     model = get_model(args)
@@ -44,7 +42,9 @@ def load_image() -> np.array:
 # Draw prediciton on the given image
 def draw_preds_on_image(uploaded_image, boxes, labels, scores):
     "draws predicitons on the Given Image"
-    image = viz.draw_bboxes(uploaded_image, boxes, labels, scores, save=False, show=False, return_fig=True)
+    image = viz.draw_bboxes(
+        uploaded_image, boxes, labels, scores, save=False, show=False, return_fig=True
+    )
     return image
 
 
@@ -74,7 +74,6 @@ def start_app() -> None:
         use_column_width=True,
     )
     st.markdown("[pic credits](https://www.robots.ox.ac.uk/~vgg/data/pets/)")
-
 
 def main() -> None:
     # Start the app
@@ -108,19 +107,10 @@ def main() -> None:
             value=100,
         )
 
-        _prompt_ = "Select the model architecture: "
-        model_arch = str(st.selectbox(_prompt_, ("resnet34", "resnet18")))
+        _path = "config/resnet34.yaml"
 
         if st.button("Generate predictions"):
-
             _prompt_ = "Loading model ... It might take some time to download the model if using for the 1st time.."
-
-            if model_arch == "resnet18":
-                _path = "config/resnet18.yaml"
-
-            elif model_arch == "resnet34":
-                _path = "config/resnet34.yaml"
-
             conf_dict = load_yaml_config(_path)
             conf_dict["score_thres"] = score_threshold
             conf_dict["nms_thres"] = nms_thres
@@ -129,8 +119,8 @@ def main() -> None:
             args = argparse.Namespace(**conf_dict)
 
             with st.spinner(_prompt_):
-                model = get_model(args=args)
                 # Load in the model
+                model = get_model(args=args)
 
             with st.spinner("Generating results ... "):
                 # Get instance predictions for the uploaded Image

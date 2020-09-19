@@ -1,7 +1,7 @@
 import argparse
 import ast
 import importlib
-import logging
+import os
 from typing import *
 
 import albumentations as A
@@ -13,6 +13,7 @@ from omegaconf import DictConfig
 from PIL import Image
 from termcolor import colored
 from torch import nn
+from torchvision.models.utils import load_state_dict_from_url
 
 from pytorch_retinanet.retinanet.models import Retinanet
 from pytorch_retinanet.retinanet.utilities import ifnone
@@ -119,18 +120,18 @@ def get_model(args: argparse.Namespace):
     logger = _get_logger(name=__name__)
     logger.name = "pytorch_retinanet.retinanet.models"
     # Instantiate model
-    m = Retinanet(args.num_classes, args.model_backbone, score_thres=args.score_thres, nms_thres=args.nms_thres, logger=logger,)
+    m = Retinanet(args.num_classes,args.model_backbone,score_thres=args.score_thres,nms_thres=args.nms_thres,logger=logger,)
 
     logger.name = __name__
     # if url is given load from url
     try:
-        state_dict = torch.hub.load_state_dict_from_url(args.url, map_location="cpu")
+        state_dict = load_state_dict_from_url(args.url)
     # else load from given weights path
     except:
         state_dict = torch.load(args.url, map_location="cpu")
     m.load_state_dict(state_dict)
-    
-    return m 
+
+    return m
 
 
 @torch.no_grad()
@@ -165,7 +166,14 @@ def get_preds(model: nn.Module, image: Union[np.array, str], **kwargs) -> Tuple[
     return boxes, clas, scores
 
 
-def detection_api(model, img: str, save: bool = True, show: bool = False, fname: str = "res.png", save_dir: str = "outputs",):
+def detection_api(
+    model,
+    img: str,
+    save: bool = True,
+    show: bool = False,
+    fname: str = "res.png",
+    save_dir: str = "outputs",
+):
     """
     Generates & draws the bbox predictions over the given image
     using the given retinanet model.
