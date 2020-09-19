@@ -52,10 +52,9 @@ class DetectionModel(pl.LightningModule):
             "frequency": self.hparams.scheduler.frequency,
         }
 
-        self.fancy_logger.info(
-            f"Optimizer: {self.optimizer.__class__.__name__}"
-            f"Scheduler: {self.scheduler['scheduler'].__class__.__name__}"
-        )
+        self.fancy_logger.info(f"Optimizer: {self.optimizer.__class__.__name__}")
+        self.fancy_logger.info(f"Scheduler: {self.scheduler['scheduler'].__class__.__name__}")
+
         return [self.optimizer], [self.scheduler]
 
     # ===================================================== #
@@ -150,7 +149,11 @@ class DetectionModel(pl.LightningModule):
         metric = self.coco_evaluator.coco_eval["bbox"].stats[0]
         metric = torch.as_tensor(metric)
         logs = {"valid_mAP": metric}
-        return {"valid_mAP": metric, "log": logs,"progress_bar": logs,}
+        return {
+            "valid_mAP": metric,
+            "log": logs,
+            "progress_bar": logs,
+        }
 
     # ===================================================== #
     # Test
@@ -184,7 +187,11 @@ class DetectionModel(pl.LightningModule):
         metric = self.test_evaluator.coco_eval["bbox"].stats[0]
         metric = torch.as_tensor(metric)
         logs = {"test_mAP": metric}
-        return {"test_mAP": metric,"log": logs,"progress_bar": logs,}
+        return {
+            "test_mAP": metric,
+            "log": logs,
+            "progress_bar": logs,
+        }
 
 
 def initialize_trainer(trainer_conf: DictConfig, **kwargs) -> pl.Trainer:

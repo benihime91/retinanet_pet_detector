@@ -23,17 +23,17 @@ def main(args: argparse.Namespace, seed: int = 123):
 
     # load the config file
     cfg = OmegaConf.load(args.config)
-    if args.disp:
+    if args.verbose > 0:
         logger.name = "main.yaml"
         logger.info(f"[Configurations]: \n {OmegaConf.to_yaml(cfg)}")
 
     # instantiate Retinanet model
     logger.name = "pytorch_retinanet.retinanet.models"
     model = Retinanet(**cfg.model, logger=logger)
-    logger.info(
-        f"Image Resize parameters: smallest_image_size={cfg.model.min_size}  maximum_image_size:{cfg.model.max_size}"
-    )
-    if args.disp:
+    logger.info(f"Image Resize parameters: smallest_image_size={cfg.model.min_size}")
+    logger.info(f"Image Resize parameters: maximum_image_size={cfg.model.max_size}")
+
+    if args.verbose > 0:
         logger.info(f"Model: \n {model}")
 
     logger.name = "retinanet_pet_detector"
@@ -73,11 +73,11 @@ if __name__ == "__main__":
         "--config", required=True, type=str, help="path to the config file"
     )
     parser.add_argument(
-        "--disp",
+        "--verbose",
         required=False,
-        default=True,
-        help="wether to print out the config",
-        type=bool,
+        default=0,
+        help="wether to print out the config and model",
+        type=int,
     )
 
     arguments = parser.parse_args()

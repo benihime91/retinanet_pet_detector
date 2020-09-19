@@ -5,9 +5,10 @@ model:
   min_size: 800
   max_size: 800
 
+# hparams are passed to the LightningModule
 hparams:
   train_csv: "data/train.csv"
-  train_batch_size: 4
+  train_batch_size: 8
 
   valid_csv: "data/valid.csv"
   valid_batch_size: 32
@@ -17,6 +18,9 @@ hparams:
 
   iou_types: "bbox"
 
+  # [Optimizer]:
+  # to use different optimzer modify optimzier.class_name to torch.optim.{some optimizer}
+  # optimizer arguments are passes under params
   optimizer:
     class_name: torch.optim.SGD
     params:
@@ -24,6 +28,11 @@ hparams:
       weight_decay: 0.01
       momentum: 0.9
 
+  # [Scheduler]:
+  # NB: if scheduler needs to be called after each `epoch` set `interval` to `epoch`
+  # for callinf scheduler after every epoch set `interval` to `step`.
+  # Frequency deterimines the number of times the scheduler shold be called
+  # during a single training pass
   scheduler:
     class_name: torch.optim.lr_scheduler.MultiStepLR
     params:
@@ -32,6 +41,10 @@ hparams:
     interval: "epoch"
     frequency: 1
 
+  # Albumentation Augmentations for train, validation and test datasets
+  # to use different or add augments just add or modify a new `class_name`
+  # which corresponds to the class name of the augments. And specify
+  # the augments parameters under params.
   augmentation:
     train:
       - class_name: albumentations.HorizontalFlip
@@ -75,7 +88,26 @@ hparams:
         params:
           always_apply: True
 
+# These arguments are passed down to the lightning Trainer
+# add arguments to trainer.flags to pass these down directly to
+# the lightning trainer
+# to modify callbacks like `early_stopping`, `model_checkpoint`
+# `learning_rate` monitor change their parameters.
+# change the Logger by changing the trainer.logger.class_name to the
+# class name of the logger you want to use.
+# NB: model weights after train end are saved at
+# trainer.model_chckpoint.filepath as `weights.pt` which is a pytorch state dict
 trainer:
+  flags:
+    check_val_every_n_epoch: 10
+    max_epochs: 80
+    precision: 16
+    gpus: 1
+    num_sanity_val_steps: 0
+    profiler: False
+    terminate_on_nan: True
+    benchmark: True
+
   early_stopping:
     class_name: pytorch_lightning.EarlyStopping
     params:
@@ -100,13 +132,3 @@ trainer:
     class_name: pytorch_lightning.loggers.tensorboard.TensorBoardLogger
     params:
       save_dir: "logs/"
-
-  flags:
-    check_val_every_n_epoch: 5
-    max_epochs: 80
-    precision: 16
-    gpus: 1
-    num_sanity_val_steps: 0
-    profiler: False
-    terminate_on_nan: True
-    benchmark: True
