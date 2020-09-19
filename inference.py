@@ -1,14 +1,14 @@
 import argparse
 from typing import *
 
+from references.data_utils import _get_logger
 from references.utils import detection_api, get_model, load_yaml_config
-from train import _get_logger
 
 
 def main(args):
     import warnings
 
-    logger = _get_logger("inference")
+    logger = _get_logger(__name__)
     warnings.filterwarnings("ignore")
 
     conf_dict = load_yaml_config(args.config)
@@ -18,22 +18,14 @@ def main(args):
 
     logger.info("Serializing model ")
     conf_dict = argparse.Namespace(**conf_dict)
-    model = get_model(conf_dict, logger=logger)
+    model = get_model(conf_dict)
     # grab the path to the Image file
     fname = args.image
     # get predictions
-    detection_api(model, fname, args.save, args.show, args.fname, args.save_dir, logger=logger)
+    detection_api(model, fname, args.save, args.show, args.fname, args.save_dir)
 
 
 if __name__ == "__main__":
-    import logging
-
-    # Set up Logging
-    logging.basicConfig(
-        format="%(asctime)s %(levelname)s: %(message)s",
-        datefmt="%m/%d/%Y %H:%M:%S",
-        level=logging.INFO,
-    )
     parser = argparse.ArgumentParser()
 
     parser.add_argument(

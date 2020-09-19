@@ -24,9 +24,8 @@ def main(args: argparse.Namespace, seed: int = 123):
     # load the config file
     cfg = OmegaConf.load(args.config)
     if args.disp:
-        logger.name = "configurations"
-        logger.info("Configs:")
-        print(OmegaConf.to_yaml(cfg))
+        logger.name = "main.yaml"
+        logger.info(f"[Configurations]: \n {OmegaConf.to_yaml(cfg)}")
 
     # instantiate Retinanet model
     logger.name = "pytorch_retinanet.retinanet.models"

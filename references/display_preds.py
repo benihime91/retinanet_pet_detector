@@ -69,7 +69,7 @@ class Visualizer:
         a.imshow(img)
 
         scores = ifnone(scores, np.repeat(1.0, axis=0, repeats=len(boxes)))
-        self.logger.info(f"Found {len(boxes)} bounding boxes on the given image")
+        self.logger.info(f"Found {len(boxes)} bounding box(s) on the given image")
 
         # Plot the bounding boxes and corresponding labels on top of the image
         for i in range(len(boxes)):

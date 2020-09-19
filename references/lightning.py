@@ -21,6 +21,7 @@ from pytorch_retinanet.references import (
 )
 from pytorch_retinanet.retinanet.utilities import collate_fn
 
+from .data_utils import _get_logger
 from .utils import get_tfms, load_obj
 
 
@@ -31,6 +32,7 @@ class DetectionModel(pl.LightningModule):
         super(DetectionModel, self).__init__()
         self.model = model
         self.hparams = hparams
+        self.fancy_logger = _get_logger(__name__)
 
     # ===================================================== #
     # Configure the Optimizer & Scheduler for the Model
@@ -52,6 +54,10 @@ class DetectionModel(pl.LightningModule):
             "frequency": self.hparams.scheduler.frequency,
         }
 
+        self.fancy_logger.info(
+            f": Optimizer: [{self.optimizer.__class__.__name__}] "
+            f": Scheduler: [{self.scheduler['scheduler'].__class__.__name__}] "
+        )
         return [self.optimizer], [self.scheduler]
 
     # ===================================================== #
@@ -63,10 +69,24 @@ class DetectionModel(pl.LightningModule):
         """
         # instantiate the transforms
         self.tfms = get_tfms(self.hparams)
+        self.fancy_logger.info(
+            f"[Augmentations used in training]: \n {list(self.tfms['train'].transforms)}"
+        )
         # load in the csv files
         self.trn_df = pd.read_csv(self.hparams.train_csv)
+        self.fancy_logger.info(
+            f"[Serialized train dataset from {self.hparams.train_csv}]"
+        )
+
         self.val_df = pd.read_csv(self.hparams.valid_csv)
+        self.fancy_logger.info(
+            f"[Serialized validation dataset from {self.hparams.valid_csv}]"
+        )
+
         self.test_df = pd.read_csv(self.hparams.test_csv)
+        self.fancy_logger.info(
+            f"[Serialized test dataset from {self.hparams.test_csv}]"
+        )
 
     # ===================================================== #
     # Forward pass of the Model

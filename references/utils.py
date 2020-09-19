@@ -18,6 +18,7 @@ from pytorch_retinanet.retinanet.models import Retinanet
 from pytorch_retinanet.retinanet.utilities import ifnone
 
 from .display_preds import Visualizer
+from .data_utils import _get_logger
 
 # Path to the Label Dictionary
 LABEL_PATH = "labels.names"
@@ -109,14 +110,11 @@ def load_yaml_config(path) -> Dict:
     return conf_dict
 
 
-def get_model(args: argparse.Namespace, logger=None):
+def get_model(args: argparse.Namespace):
     "returns a pre-trained retinanet model"
-
-    if logger is not None:
-        logger.name = "retinanet"
-    else:
-        logger = logging.getLogger("retinanet")
-
+    logger = _get_logger(name=__name__)
+    logger.name = "pytorch_retinanet.retinanet.models"
+    
     model = Retinanet(
         args.num_classes,
         args.model_backbone,
@@ -124,6 +122,8 @@ def get_model(args: argparse.Namespace, logger=None):
         nms_thres=args.nms_thres,
         logger=logger,
     )
+
+    logger.name = __name__
     state_dict = torch.hub.load_state_dict_from_url(args.url, map_location="cpu")
     model.load_state_dict(state_dict)
     return model
@@ -134,10 +134,7 @@ def get_preds(model: nn.Module, image: Union[np.array, str], **kwargs) -> Tuple[
     """
     Generated predictions for the given `image` using `model`.
     """
-    try:
-        logger.name = "predictions"
-    except:
-        logger = logging.getLogger("predictions")
+    logger = _get_logger(name=__name__)
 
     # load in the image if string is give
     if isinstance(image, str):
@@ -161,8 +158,6 @@ def get_preds(model: nn.Module, image: Union[np.array, str], **kwargs) -> Tuple[
     clas = list(pred_class.cpu().numpy())
     scores = list(pred_score.cpu().numpy())
 
-    logger.info(f"Number of bounding doxes detected : {len(boxes)}")
-
     return boxes, clas, scores
 
 
@@ -173,7 +168,6 @@ def detection_api(
     show: bool = False,
     fname: str = "res.png",
     save_dir: str = "outputs",
-    logger=None,
 ):
 
     """
@@ -189,14 +183,12 @@ def detection_api(
      save_dir (str)   : directory where to save the image.
     """
     # Extract the predicitons for given Image
-    bb, cls, sc = get_preds(model, img, logger=logger)
+    bb, cls, sc = get_preds(model, img)
     # Instantiate the visualizer
-    viz = Visualizer(class_names=label_dict, logger=logger)
+    viz = Visualizer(class_names=label_dict)
     # Load in the image
     img = Image.open(img).convert("RGB")
     img = np.array(img)
     # Draw the bounding boxes over the loaded image
-    viz.draw_bboxes(
-        img, bb, cls, sc, save=save, show=show, save_dir=save_dir, fname=fname
-    )
+    viz.draw_bboxes(img, bb, cls, sc, save=save, show=show, save_dir=save_dir, fname=fname)
 
