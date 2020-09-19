@@ -8,7 +8,7 @@ Create a `PetDetector` which can detect the `faces` of cats & dogs in Images usi
 
 `The Oxford-IIIT Pet Dataset` which can be found [here](https://www.robots.ox.ac.uk/~vgg/data/pets/).
 
-## **TODO**:
+## TODO:
 
 - [x] Parse the data and convert it to a managable format ex: CSV.
 - [x] Finish [Retinanet Project](https://github.com/benihime91/pytorch_retinanet) first.
@@ -17,7 +17,7 @@ Create a `PetDetector` which can detect the `faces` of cats & dogs in Images usi
 - [x] Deploy WebApp . `(Removed due to cost constraints)`
 - [x] Notebooks & Scripts for Train. 
 
-## **Usage**:
+## Usage:
 
 - Install [python3](https://www.python.org/downloads/)
 - Install dependencies
@@ -43,7 +43,7 @@ $ pip install -r requirements.txt
 ## Inference with Pre-Trained weights:
 ```bash
 $ python inference.py \
-      --config "config"\
+      --config "config/resnet34.yaml"\
       --image "/content/oxford-iiit-pet/images/german_shorthaired_128.jpg" \
       --save_dir "/content/" \
       --fname "res_1.png" \
@@ -135,11 +135,11 @@ Flags:
   ```
 
 - Training is controlled by the `main.yaml` file. Before training ensures that the paths in `main.yaml` : ( `hparams.train_csv`,`hparams.valid_csv`,`hparams.valid_csv` ) are the correct paths to the files generated above.  
-If `not training` on GPU change these arguments:  
+  If `not training` on GPU change these arguments:  
   - `trainer.gpus` = 0
   - `trainer.precision` = 32
   
-In the same the other flags in `main.yaml` can be modified.
+  In the same the other flags in `main.yaml` can be modified.
 
 - To train run this command. The `--config` argument points to the path to where the `main.yaml` file is saved.
   ```bash
@@ -151,8 +151,9 @@ In the same the other flags in `main.yaml` can be modified.
 
 - For inference modify the `config/resnet34.yaml` file . Set the `url` to be the path where the weights are saved. Example: `checkpoints/weights.pth`.
 
-`--config` arguments points to the path where the `config/resnet34.yaml` file is saved.
-`--image` corresponds to the path of the image. Results are saved as `saved_dir/fname`.
+  `--config` arguments points to the path where the `config/resnet34.yaml` file is saved.
+  `--image` corresponds to the path of the image. Results are saved as `saved_dir/fname`.
+  
   ```bash
   $ python inference.py \
       --config "/content/retinanet_pet_detector/config/resnet34.yaml"\
