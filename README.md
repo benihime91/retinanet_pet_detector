@@ -169,26 +169,28 @@ In the same the other flags in `main.yaml` can be modified.
   ```
   
 ## Results:
-```bash
-[09/19 13:37:58 references.lightning]: Evaluation results for bbox: 
-IoU metric: bbox
- Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.576
- Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
- Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.608
- Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
- Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.500
- Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.576
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.544
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.624
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.624
- Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
- Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.500
- Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.628
---------------------------------------------------------------------------------
-DATALOADER:0 TEST RESULTS
-{'test_mAP': tensor(0.5763, dtype=torch.float64)}
---------------------------------------------------------------------------------
-```
+
+- Results for RetinaNet model with resnet34 backbone:
+  ```bash
+  [09/19 13:37:58 references.lightning]: Evaluation results for bbox: 
+  IoU metric: bbox
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.576
+   Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 1.000
+   Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.608
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.500
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.576
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.544
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.624
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.624
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.500
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.628
+  --------------------------------------------------------------------------------
+  DATALOADER:0 TEST RESULTS
+  {'test_mAP': tensor(0.5763, dtype=torch.float64)}
+  --------------------------------------------------------------------------------
+  ```
 
 <img src="images/res_1.png" width="500" height="600"> 
 
