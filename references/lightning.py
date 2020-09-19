@@ -70,7 +70,7 @@ class DetectionModel(pl.LightningModule):
         # instantiate the transforms
         self.tfms = get_tfms(self.hparams)
         self.fancy_logger.info(
-            f"[Augmentations used in training]: \n {list(self.tfms['train'].transforms)}"
+            f"[Augmentations used in training]: {list(self.tfms['train'].transforms)}"
         )
         # load in the csv files
         self.trn_df = pd.read_csv(self.hparams.train_csv)
