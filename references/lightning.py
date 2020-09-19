@@ -26,6 +26,15 @@ from .utils import get_tfms, load_obj
 
 
 class DetectionModel(pl.LightningModule):
+    """
+    Lightning Class to wrap the RetinaNet Model.
+    So that it can be trainer with LightningTrainer.
+
+    Args:
+      model (`nn.Module`)    : A `RetinaNet` model instance. 
+      haprams (`DictConfig`) : A `DictConfig` that stores the configs for training .
+                               Check `main.yaml` in the parent dir.
+    """
     def __init__(self, model: nn.Module, hparams: DictConfig):
         super(DetectionModel, self).__init__()
         self.model = model
@@ -53,10 +62,7 @@ class DetectionModel(pl.LightningModule):
         }
 
         self.fancy_logger.info(f"Optimizer: {self.optimizer.__class__.__name__}")
-        self.fancy_logger.info(
-            f"Scheduler: {self.scheduler['scheduler'].__class__.__name__}"
-        )
-
+        self.fancy_logger.info(f"Scheduler: {self.scheduler['scheduler'].__class__.__name__}")
         return [self.optimizer], [self.scheduler]
 
     # ===================================================== #
@@ -68,31 +74,19 @@ class DetectionModel(pl.LightningModule):
         """
         # instantiate the transforms
         self.tfms = get_tfms(self.hparams)
-        self.fancy_logger.info(
-            f"Augmentations used in training: {list(self.tfms['train'].transforms)}"
-        )
+        self.fancy_logger.info(f"Augmentations used in training: {list(self.tfms['train'].transforms)}")
         # load in the csv files
         self.trn_df = pd.read_csv(self.hparams.train_csv)
-        self.fancy_logger.info(
-            f"Serialized train dataset from {self.hparams.train_csv}"
-        )
-        self.fancy_logger.info(
-            f"Serialized dataset takes {os.path.getsize(self.hparams.train_csv)/(1024*1024):.2f} MiB"
-        )
+        self.fancy_logger.info(f"Serialized train dataset from {self.hparams.train_csv}")
+        self.fancy_logger.info(f"Serialized dataset takes {os.path.getsize(self.hparams.train_csv)/(1024*1024):.2f} MiB")
 
         self.val_df = pd.read_csv(self.hparams.valid_csv)
-        self.fancy_logger.info(
-            f"Serialized validation dataset from {self.hparams.valid_csv}"
-        )
-        self.fancy_logger.info(
-            f"Serialized dataset takes {os.path.getsize(self.hparams.valid_csv)/(1024*1024):.2f} MiB"
-        )
+        self.fancy_logger.info(f"Serialized validation dataset from {self.hparams.valid_csv}")
+        self.fancy_logger.info(f"Serialized dataset takes {os.path.getsize(self.hparams.valid_csv)/(1024*1024):.2f} MiB")
 
         self.test_df = pd.read_csv(self.hparams.test_csv)
         self.fancy_logger.info(f"Serialized test dataset from {self.hparams.test_csv}")
-        self.fancy_logger.info(
-            f"Serialized dataset takes {os.path.getsize(self.hparams.test_csv)/(1024*1024):.2f} MiB"
-        )
+        self.fancy_logger.info(f"Serialized dataset takes {os.path.getsize(self.hparams.test_csv)/(1024*1024):.2f} MiB")
 
     # ===================================================== #
     # Forward pass of the Model
@@ -150,11 +144,7 @@ class DetectionModel(pl.LightningModule):
         metric = self.coco_evaluator.coco_eval["bbox"].stats[0]
         metric = torch.as_tensor(metric)
         logs = {"valid_mAP": metric}
-        return {
-            "valid_mAP": metric,
-            "log": logs,
-            "progress_bar": logs,
-        }
+        return {"valid_mAP": metric, "log": logs, "progress_bar": logs,}
 
     # ===================================================== #
     # Test
@@ -187,29 +177,25 @@ class DetectionModel(pl.LightningModule):
         metric = self.test_evaluator.coco_eval["bbox"].stats[0]
         metric = torch.as_tensor(metric)
         logs = {"test_mAP": metric}
-        return {
-            "test_mAP": metric,
-            "log": logs,
-            "progress_bar": logs,
-        }
+        return {"test_mAP": metric, "log": logs, "progress_bar": logs,}
 
 
 class LogCallback(pl.Callback):
+    """
+    Callback to handle logging within pl_module
+    """
+
     def on_train_start(self, trainer, pl_module):
         pl_module.fancy_logger.info("Starting training from iteration 0 ")
 
     def on_validation_start(self, trainer, pl_module):
-        pl_module.fancy_logger.info(
-            f"Start Inference on {len(pl_module.val_dataloader())} images ..."
-        )
+        pl_module.fancy_logger.info(f"Start Inference on {len(pl_module.val_dataloader())} images ...")
 
     def on_validation_epoch_start(self, trainer, pl_module):
         pl_module.fancy_logger.info("Evaluating predictions ...")
 
     def on_test_start(self, trainer, pl_module):
-        pl_module.fancy_logger.info(
-            f"Start Inference on {len(pl_module.test_dataloader())} images ..."
-        )
+        pl_module.fancy_logger.info(f"Start Inference on {len(pl_module.test_dataloader())} images ...")
 
     def on_test_epoch_start(self, trainer, pl_module):
         pl_module.fancy_logger.info("Evaluating predictions ...")
@@ -220,14 +206,21 @@ class LogCallback(pl.Callback):
 
 def initialize_trainer(trainer_conf: DictConfig, **kwargs) -> pl.Trainer:
     """
-    Instantiates a Lightning Trainer
-    from given config file 
+    Instantiates a Lightning Trainer from given config file .
+    The Trainer is initialized with the flags given in the config
+    file with the addition of the `LogCallback`.
+
+    Args:
+        trainer_conf `(DictConfig)`: configs for the Trainer.
+        **kwargs – Other arguments are passed directly to the `pl.Trainer`.
     """
     # instantiate EarlyStoppping Callback
     early_stopping = EarlyStopping(**trainer_conf.early_stopping.params)
+
     # instantiate ModelCheckpoint Callback
     os.makedirs(trainer_conf.model_checkpoint.params.filepath, exist_ok=True)
     model_checkpoint = ModelCheckpoint(**trainer_conf.model_checkpoint.params)
+
     # instantiate callbacks
     lr_logger = LearningRateLogger(**trainer_conf.learning_rate_monitor.params)
     logger = load_obj(trainer_conf.logger.class_name)(**trainer_conf.logger.params)
@@ -236,6 +229,7 @@ def initialize_trainer(trainer_conf: DictConfig, **kwargs) -> pl.Trainer:
     callbacks = [lr_logger, log_cb]
     logger = [logger]
 
+    # Load Trainer:
     trainer = pl.Trainer(
         logger=logger,
         checkpoint_callback=model_checkpoint,
