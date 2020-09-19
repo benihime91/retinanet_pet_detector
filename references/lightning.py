@@ -195,27 +195,27 @@ class DetectionModel(pl.LightningModule):
 
 
 class LogCallback(pl.Callback):
-    def __init__(self):
-        super().__init__()
-        self.logger = _get_logger(__name__)
-
     def on_train_start(self, trainer, pl_module):
-        self.logger.info("Starting training from iteration 0 ")
+        pl_module.fancy_logger.info("Starting training from iteration 0 ")
 
     def on_validation_start(self, trainer, pl_module):
-        self.logger.info(f"Start Inference on {len(pl_module.val_dataloader)} images ...")
+        pl_module.fancy_logger.info(
+            f"Start Inference on {len(pl_module.val_dataloader())} images ..."
+        )
 
     def on_validation_epoch_start(self, trainer, pl_module):
-        self.logger.info("Evaluating predictions ...")
+        pl_module.fancy_logger.info("Evaluating predictions ...")
 
     def on_test_start(self, trainer, pl_module):
-        self.logger.info(f"Start Inference on {len(pl_module.test_dataloader)} images ...")
+        pl_module.fancy_logger.info(
+            f"Start Inference on {len(pl_module.test_dataloader())} images ..."
+        )
 
     def on_test_epoch_start(self, trainer, pl_module):
-        self.logger.info("Evaluating predictions ...")
+        pl_module.fancy_logger.info("Evaluating predictions ...")
 
-    def on_init_end(self, trainer):
-        self.logger.info("serializing model ...")
+    def on_test_start(self, trainer, pl_module):
+        pl_module.fancy_logger.info("Evaluating Done !")
 
 
 def initialize_trainer(trainer_conf: DictConfig, **kwargs) -> pl.Trainer:

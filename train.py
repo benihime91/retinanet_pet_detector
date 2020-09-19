@@ -58,6 +58,7 @@ def main(args: argparse.Namespace, seed: int = 123):
     # Save weights
     weights = os.path.join(cfg.trainer.model_checkpoint.params.filepath, "weights.pt")
     torch.save(litModule.model.state_dict(), weights)
+    logger.info("serializing model state dict ...")
     logger.info(f"Weights saved to {weights} .... ")
     logger.info("Cleaning up .....")
     t_end = datetime.datetime.now()
