@@ -1,17 +1,20 @@
 model:
   backbone_kind: "resnet34"
   num_classes: 37
+  freeze_bn: True
+  min_size: 800
+  max_size: 800
 
 hparams:
-  learning_rate: 0.002
-  weight_decay: 0.01
-  momentum: 0.9
   train_csv: "data/train.csv"
-  valid_csv: "data/valid.csv"
-  test_csv: "data/test.csv"
   train_batch_size: 4
+
+  valid_csv: "data/valid.csv"
   valid_batch_size: 32
+
+  test_csv: "data/test.csv"
   test_batch_size: 32
+
   iou_types: "bbox"
 
   optimizer:
@@ -24,7 +27,7 @@ hparams:
   scheduler:
     class_name: torch.optim.lr_scheduler.MultiStepLR
     params:
-      milestones: [32, 55]
+      milestones: [60, 75]
       gamma: 0.1
     interval: "epoch"
     frequency: 1
@@ -37,7 +40,7 @@ hparams:
 
       - class_name: albumentations.ToGray
         params:
-          p: 0.5
+          p: 0.25
 
       - class_name: albumentations.CLAHE
         params:
@@ -100,7 +103,7 @@ trainer:
 
   flags:
     check_val_every_n_epoch: 5
-    max_epochs: 100
+    max_epochs: 80
     precision: 16
     gpus: 1
     num_sanity_val_steps: 0

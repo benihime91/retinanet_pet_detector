@@ -26,9 +26,7 @@ from .utils import get_tfms, load_obj
 
 
 class DetectionModel(pl.LightningModule):
-    def __init__(
-        self, model: nn.Module, hparams: Union[Dict, argparse.Namespace, DictConfig]
-    ):
+    def __init__(self, model: nn.Module, hparams: DictConfig):
         super(DetectionModel, self).__init__()
         self.model = model
         self.hparams = hparams
@@ -55,8 +53,8 @@ class DetectionModel(pl.LightningModule):
         }
 
         self.fancy_logger.info(
-            f": Optimizer: [{self.optimizer.__class__.__name__}] "
-            f": Scheduler: [{self.scheduler['scheduler'].__class__.__name__}] "
+            f"Optimizer: {self.optimizer.__class__.__name__}"
+            f"Scheduler: {self.scheduler['scheduler'].__class__.__name__}"
         )
         return [self.optimizer], [self.scheduler]
 
@@ -99,14 +97,12 @@ class DetectionModel(pl.LightningModule):
     # Forward pass of the Model
     # ===================================================== #
     def forward(self, xb, *args, **kwargs):
-        "forward step"
         return self.model(xb)
 
     # ===================================================== #
     # Training
     # ===================================================== #
     def train_dataloader(self, *args, **kwargs):
-        "instantiate train dataloader"
         # instantiate the trian dataset
         train_ds = DetectionDataset(self.trn_df, self.tfms["train"])
         # load in the dataloader
@@ -115,7 +111,6 @@ class DetectionModel(pl.LightningModule):
         return trn_dl
 
     def training_step(self, batch, batch_idx, *args, **kwargs):
-        "one training step"
         images, targets, _ = batch  # unpack the one batch from the DataLoader
         targets = [{k: v for k, v in t.items()} for t in targets]  # Unpack the Targets
         # Calculate Losses {regression_loss , classification_loss}
@@ -128,81 +123,68 @@ class DetectionModel(pl.LightningModule):
     # Validation
     # ===================================================== #
     def val_dataloader(self, *args, **kwargs):
-        "instatiate validation dataloader"
         # instantiate the validaiton dataset
         val_ds = DetectionDataset(self.val_df, self.tfms["valid"])
         # instantiate dataloader
         bs = self.hparams.valid_batch_size
         loader = DataLoader(val_ds, bs, collate_fn=collate_fn,)
         # instantiate coco
+        self.fancy_logger.info("Converting validation dataset into COCO format")
         coco = get_coco_api_from_dataset(loader.dataset)
         self.coco_evaluator = CocoEvaluator(coco, [self.hparams.iou_types])
         return loader
 
     def validation_step(self, batch, batch_idx, *args, **kwargs):
-        "one validation step"
         images, targets, _ = batch
         targets = [{k: v for k, v in t.items()} for t in targets]
         outputs = self.model(images, targets)
-        res = {
-            target["image_id"].item(): output
-            for target, output in zip(targets, outputs)
-        }
+        res = {t["image_id"].item(): o for t, o in zip(targets, outputs)}
         self.coco_evaluator.update(res)
         return {}
 
     def validation_epoch_end(self, outputs, *args, **kwargs):
+        self.fancy_logger.info("Evaluating predictions ...")
+        self.fancy_logger.info("Evaluation results for bbox: ")
         self.coco_evaluator.accumulate()
         self.coco_evaluator.summarize()
         metric = self.coco_evaluator.coco_eval["bbox"].stats[0]
         metric = torch.as_tensor(metric)
         logs = {"valid_mAP": metric}
-
-        return {
-            "valid_mAP": metric,
-            "log": logs,
-            "progress_bar": logs,
-        }
+        return {"valid_mAP": metric, "log": logs,"progress_bar": logs,}
 
     # ===================================================== #
     # Test
     # ===================================================== #
     def test_dataloader(self, *args, **kwargs):
-        "instatiate validation dataloader"
         # instantiate train dataset
         test_ds = DetectionDataset(self.test_df, self.tfms["test"])
         # instantiate dataloader
         bs = self.hparams.test_batch_size
         loader = DataLoader(test_ds, bs, collate_fn=collate_fn,)
         # instantiate coco_api to track metrics
+        self.fancy_logger.info("Converting test dataset into COCO format")
         coco = get_coco_api_from_dataset(loader.dataset)
         self.test_evaluator = CocoEvaluator(coco, [self.hparams.iou_types])
         return loader
 
     def test_step(self, batch, batch_idx, *args, **kwargs):
-        "one test step"
         images, targets, _ = batch
         targets = [{k: v for k, v in t.items()} for t in targets]
         outputs = self.model(images, targets)
-        res = {
-            target["image_id"].item(): output
-            for target, output in zip(targets, outputs)
-        }
+        res = {t["image_id"].item(): o for t, o in zip(targets, outputs)}
         self.test_evaluator.update(res)
         return {}
 
     def test_epoch_end(self, outputs, *args, **kwargs):
+        self.fancy_logger.info("Evaluating predictions ...")
+        self.fancy_logger.info("Evaluation results for bbox: ")
+        # coco results
         self.test_evaluator.accumulate()
         self.test_evaluator.summarize()
         metric = self.test_evaluator.coco_eval["bbox"].stats[0]
         metric = torch.as_tensor(metric)
         logs = {"test_mAP": metric}
-
-        return {
-            "test_mAP": metric,
-            "log": logs,
-            "progress_bar": logs,
-        }
+        return {"test_mAP": metric,"log": logs,"progress_bar": logs,}
 
 
 def initialize_trainer(trainer_conf: DictConfig, **kwargs) -> pl.Trainer:

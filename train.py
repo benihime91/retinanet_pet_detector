@@ -30,7 +30,11 @@ def main(args: argparse.Namespace, seed: int = 123):
     # instantiate Retinanet model
     logger.name = "pytorch_retinanet.retinanet.models"
     model = Retinanet(**cfg.model, logger=logger)
-    logger.info(f"Model: \n {model}")
+    logger.info(
+        f"Image Resize parameters: smallest_image_size={cfg.model.min_size}  maximum_image_size:{cfg.model.max_size}"
+    )
+    if args.disp:
+        logger.info(f"Model: \n {model}")
 
     logger.name = "retinanet_pet_detector"
     # Instantiate LightningModel & Trainer
