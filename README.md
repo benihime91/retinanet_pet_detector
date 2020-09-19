@@ -138,6 +138,7 @@ Flags:
 If `not training` on GPU change these arguments:  
   - `trainer.gpus` = 0
   - `trainer.precision` = 32
+  
 In the same the other flags in `main.yaml` can be modified.
 
 - To train run this command. The `--config` argument points to the path to where the `main.yaml` file is saved.
