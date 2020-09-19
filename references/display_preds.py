@@ -8,9 +8,11 @@ import numpy as np
 from PIL import Image
 
 from pytorch_retinanet.retinanet.utilities import ifnone
+from .data_utils import _get_logger
 
 # Turn interactive plotting off
 plt.ioff()
+
 
 class Visualizer:
     def __init__(self, class_names: Union[Dict[int, str], List[str]], logger=None):
@@ -20,11 +22,11 @@ class Visualizer:
             dtype=np.float32,
         )
         if logger is None:
-            self.logger = logging.getLogger("retinanet")
+            self.logger = _get_logger("visualizer")
         else:
             self.logger = logger
             self.logger.name = "visualizer"
-        
+
         self.logger.info("visualizer initialized")
 
     def _get_color(self, c, x, max_val):
@@ -103,7 +105,9 @@ class Visualizer:
             c1 = (x1, y2)
             w1 = width_x
             w2 = width_y
-            rect = patches.Rectangle(c1, w1, w2, linewidth=4, edgecolor=rgb, facecolor="none")
+            rect = patches.Rectangle(
+                c1, w1, w2, linewidth=4, edgecolor=rgb, facecolor="none"
+            )
             # Draw the bounding box on top of the image
             a.add_patch(rect)
 
@@ -130,7 +134,9 @@ class Visualizer:
 
         if save:
             os.makedirs(save_dir, exist_ok=True)
-            plt.savefig(fname=os.path.join(save_dir, fname), bbox_inches="tight", pad_inches=0,)
+            plt.savefig(
+                fname=os.path.join(save_dir, fname), bbox_inches="tight", pad_inches=0,
+            )
             self.logger.info(f"Results saved to {os.path.join(save_dir, fname)}")
             plt.close(fig)
 
