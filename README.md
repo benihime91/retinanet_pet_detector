@@ -213,24 +213,24 @@ Flags:
   --------------------------------------------------------------------------------
   ```
   
- - Results for RetinaNet model with resnet50 backbone:  
+- Results for RetinaNet model with resnet50 backbone:  
 
-  ```bash
-  [09/20 12:39:13 references.lightning]: Evaluation results for bbox: 
-  IoU metric: bbox
-   Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.600
-   Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.979
-   Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.604
-   Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
-   Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
-   Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.600
-   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.606
-   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.619
-   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.619
-   Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
-   Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
-   Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.619
-  ```
+   ```bash
+   [09/20 12:39:13 references.lightning]: Evaluation results for bbox: 
+   IoU metric: bbox
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.600
+    Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.979
+    Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.604
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+    Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.600
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.606
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.619
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.619
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+    Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.619
+   ```
 
 <img src="images/res_1.png" width="500" height="600"> 
 
