@@ -57,6 +57,7 @@ $ pip install -r requirements.txt
 
 ## Tutorials
 - **Google Colab Notebook** with free GPU: <a href="https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/demo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
+- **Kaggle Notebbok** with free GPU : https://www.kaggle.com/benihime91/resnet50-backbone
 
 ## Inference with Pre-Trained weights:
   ```bash
