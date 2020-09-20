@@ -41,13 +41,22 @@ $ pip install -r requirements.txt
 - **Google Colab Notebook** with free GPU: <a href="https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/demo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
 
 ## Inference with Pre-Trained weights:
-```bash
-$ python inference.py \
-      --config "config/resnet34.yaml"\
-      --image "/content/oxford-iiit-pet/images/german_shorthaired_128.jpg" \
-      --save_dir "/content/" \
-      --fname "res_1.png" \
-```
+  ```bash
+  $ python inference.py \
+        --config "config/resnet34.yaml"\
+        --image "/content/oxford-iiit-pet/images/german_shorthaired_128.jpg" \
+        --save_dir "/content/" \
+        --fname "res_1.png" \
+  ```
+  or 
+
+  ```bash
+  $ python inference.py \
+        --config "config/resnet50.yaml"\
+        --image "/content/oxford-iiit-pet/images/german_shorthaired_128.jpg" \
+        --save_dir "/content/" \
+        --fname "res_1.png" \
+  ```
 
 Flags:
 
@@ -112,7 +121,16 @@ Flags:
   ```
 
   This commmand converts the xml to csv files. Change the `--img_dir` to the path where the dataset images are stored, `--annot_dir` to the path where the xml annotation are stored & `--labels` to where the `label.names` file is stored. `label.names` is stored in `data/labels.names`. The csv file will be saved in `--output_dir` as `data-full.csv`.
-
+  
+  ```bash
+  $ python inference.py \
+        --config "config/resnet34.yaml"\
+        --image "/content/oxford-iiit-pet/images/german_shorthaired_128.jpg" \
+        --save_dir "/content/" \
+        --fname "res_1.png" \
+  ```
+  or 
+  
   ```bash
   $ python references/data_utils.py \
       --action create \
@@ -149,14 +167,14 @@ Flags:
   ```
   Model weights are automatically saved as `state_dicts()` in the `filepath` specifed in `trainer.model_checkpoint.params.filepath` in `main.yaml` as `weights.pth`
 
-- For inference modify the `config/resnet34.yaml` file . Set the `url` to be the path where the weights are saved. Example: `checkpoints/weights.pth`.
+- For inference modify the `config/resnet34.yaml` or `config/resnet50.yaml` file . Set the `url` to be the path where the weights are saved. Example: `checkpoints/weights.pth`.
 
-  `--config` arguments points to the path where the `config/resnet34.yaml` file is saved.
+  `--config` arguments points to the path where the `config/resnet34.yaml` or `config/resnet50.yaml` file is saved.
   `--image` corresponds to the path of the image. Results are saved as `saved_dir/fname`.
   
   ```bash
   $ python inference.py \
-      --config "/content/retinanet_pet_detector/config/resnet34.yaml"\
+      --config "/content/retinanet_pet_detector/config/resnet50.yaml"\
       --image "/content/oxford-iiit-pet/images/german_shorthaired_128.jpg"\
       --score_thres 0.7 \
       --iou_thres 0.4 \
