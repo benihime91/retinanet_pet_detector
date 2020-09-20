@@ -18,8 +18,8 @@ from torchvision.models.utils import load_state_dict_from_url
 from pytorch_retinanet.retinanet.models import Retinanet
 from pytorch_retinanet.retinanet.utilities import ifnone
 
-from .display_preds import Visualizer
 from .data_utils import _get_logger
+from .display_preds import Visualizer
 
 # Path to the Label Dictionary
 LABEL_PATH = "labels.names"
@@ -125,7 +125,7 @@ def get_model(args: argparse.Namespace):
     logger.name = __name__
     # if url is given load from url
     try:
-        state_dict = load_state_dict_from_url(args.url)
+        state_dict = load_state_dict_from_url(args.url, map_location="cpu")
     # else load from given weights path
     except:
         state_dict = torch.load(args.url, map_location="cpu")
@@ -195,4 +195,3 @@ def detection_api(
     img = np.array(img)
     # Draw the bounding boxes over the loaded image
     viz.draw_bboxes(img, bb, cls, sc, save=save, show=show, save_dir=save_dir, fname=fname)
-

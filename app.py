@@ -43,7 +43,9 @@ def load_image() -> np.array:
 # Draw prediciton on the given image
 def draw_preds_on_image(uploaded_image, boxes, labels, scores):
     "draws predicitons on the Given Image"
-    image = viz.draw_bboxes(uploaded_image, boxes, labels, scores, save=False, show=False, return_fig=True)
+    image = viz.draw_bboxes(
+        uploaded_image, boxes, labels, scores, save=False, show=False, return_fig=True
+    )
     return image
 
 
@@ -54,19 +56,27 @@ def _init_app() -> None:
     """
     # set title
     st.title("Detecting Pet Faces 👁 🐶 🐱",)
-    st.markdown("This application detects the faces of some common Pet Breeds using a **RetinaNet**.")
+    st.markdown(
+        "This application detects the faces of some common Pet Breeds using a **RetinaNet**."
+    )
     st.write("## How does it work?")
-    st.write("Add an image of a pet (cat or dog) and the app will draw the dounding box where it detects the objects:")
+    st.write(
+        "Upload an image of a pet (cat or dog) and the app will draw the dounding box where it detects the objects:"
+    )
     # Display demo Image
-    st.image(Image.open("images/res_3.png"), caption="Example", use_column_width=True,)
+    st.image(
+        Image.open("images/res_3.png"), caption="Example", use_column_width=True,
+    )
     st.write("## Upload your own image")
     st.write(
-    "**Note:** The model has been trained on pets breeds given in the `The Oxford-IIIT Pet Dataset`"
-    " and therefore will only with those kind of images."
+        "**Note:** The model has been trained on pets breeds given in the `The Oxford-IIIT Pet Dataset`"
+        " and therefore will only with those kind of images."
     )
     st.markdown("**To be more precise the model has been trained on these breeds:**")
     # Show Train data Statistics
-    st.image(Image.open("images/breed_count.jpg"),use_column_width=True,)
+    st.image(
+        Image.open("images/breed_count.jpg"), use_column_width=True,
+    )
 
 
 def main() -> None:
@@ -92,13 +102,13 @@ def main() -> None:
         label="Detections with score < score_threshold are discarded",
         min_value=0.1,
         max_value=1.0,
-        value=0.7,
+        value=0.8,
     )
 
     # Set IOU Threshold
     st.sidebar.markdown("**iou threshold for detection bounding boxes**")
     nms_thres = st.sidebar.slider(
-        label="iou threshold", min_value=0.1, max_value=1.0, value=0.4,
+        label="IOU threshold", min_value=0.1, max_value=1.0, value=0.4,
     )
 
     # Set maximum detections
@@ -107,6 +117,17 @@ def main() -> None:
     )
     md = st.sidebar.slider(
         label="max detections", min_value=1, max_value=500, value=100,
+    )
+
+    # general usage Info
+    st.sidebar.header("General Usage Info:")
+    st.sidebar.subheader("**Many bounding boxes generated ?**")
+    st.sidebar.markdown(
+        f"* **try increasing the `score threshold`**\n * **reducing the `IOU threshold`**"
+    )
+    st.sidebar.subheader("**Bounding boxes not being detected ?**")
+    st.sidebar.markdown(
+        f"* **try reducing the `score threshold`**\n * **increasing the `IOU threshold`** \n * **select a different `model architecture` from above given list**"
     )
 
     # If image is Upladed make predictions when button is clicked
@@ -135,7 +156,6 @@ def main() -> None:
                 f"* **Number of bounding boxes detected in Image** : {len(bb)}\n"
                 f"* **Breeds detected in Image** : {[label_dict[idx] for idx in lb]}"
             )
-
             with st.spinner("Writing results on the Image:"):
                 # Draw on predictions to image
                 res = draw_preds_on_image(image, bb, lb, sc)
