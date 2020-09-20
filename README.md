@@ -236,10 +236,6 @@ Flags:
    Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
    Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = 0.500
    Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.628
-  --------------------------------------------------------------------------------
-  DATALOADER:0 TEST RESULTS
-  {'test_mAP': tensor(0.5763, dtype=torch.float64)}
-  --------------------------------------------------------------------------------
   ```
   
 - Results for RetinaNet model with resnet50 backbone:  
