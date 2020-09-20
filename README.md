@@ -1,12 +1,20 @@
-# retinanet_pet_detector
+# Pet Face Detector 👁 🐶 🐱
 
-Using a `Retinanet` to detect faces of `cats & dogs`.
+Using a [RetinaNet](https://github.com/benihime91/pytorch_retinanet) to detect faces of common breeds of Pets.
+.<p align="center"><img src="images/res_3.png"> </p> The model not only detects faces of the pets but also classifies the face breed of the animal.
+Since, the model has been trained on the these following breeds : <p align="center"><img src="images/breed_count.jpg"> </p>  
 
-Create a `PetDetector` which can detect the `faces` of cats & dogs in Images using my implementation of [Retinanet](https://github.com/benihime91/pytorch_retinanet).
+This project is built on top of : 
+* **[PyTorch](https://github.com/pytorch/pytorch)**  
+  <p align="center"><img src=https://github.com/pytorch/pytorch/blob/master/docs/source/_static/img/pytorch-logo-dark.png> </p>
+* **[PyTorchLightning](https://github.com/PyTorchLightning/pytorch-lightning)**  
+  <p align="center"><img src=https://github.com/PyTorchLightning/pytorch-lightning/blob/master/docs/source/_images/logos/lightning_logo.svg> </p>
+* **[Torchvision](https://github.com/pytorch/vision)**
+* **[Albumentations](https://github.com/albumentations-team/albumentations)**
 
 ## **Dataset used**:
 
-`The Oxford-IIIT Pet Dataset` which can be found [here](https://www.robots.ox.ac.uk/~vgg/data/pets/).
+For training the models **The Oxford-IIIT Pet Dataset** has been used which can be found [here](https://www.robots.ox.ac.uk/~vgg/data/pets/).
 
 ## TODO:
 
@@ -100,9 +108,9 @@ Flags:
   ```bash
   $ python references/data_utils.py --help
     usage: data_utils.py [-h] [--action {create,split}] [--img_dir IMG_DIR]
-                        [--annot_dir ANNOT_DIR] [--labels LABELS] [--csv CSV]
-                        [--valid_size VALID_SIZE] [--test_size TEST_SIZE]
-                        [--output_dir OUTPUT_DIR]
+                       [--annot_dir ANNOT_DIR] [--labels LABELS] [--csv CSV]
+                       [--valid_size VALID_SIZE] [--test_size TEST_SIZE]
+                       [--output_dir OUTPUT_DIR] [--seed SEED]
 
     optional arguments:
       -h, --help            show this help message and exit
@@ -118,6 +126,7 @@ Flags:
                             size of the test set relative to the validation set
       --output_dir OUTPUT_DIR
                             path to the output csv file
+      --seed SEED           random seed
   ```
 
   This commmand converts the xml to csv files. Change the `--img_dir` to the path where the dataset images are stored, `--annot_dir` to the path where the xml annotation are stored & `--labels` to where the `label.names` file is stored. `label.names` is stored in `data/labels.names`. The csv file will be saved in `--output_dir` as `data-full.csv`.
@@ -235,8 +244,3 @@ Flags:
     Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
     Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.619
    ```
-
-<img src="images/res_1.png" width="500" height="600"> 
-
-
-<img src="images/res_2.png" width="500" height="600">
