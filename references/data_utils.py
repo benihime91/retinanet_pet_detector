@@ -145,23 +145,15 @@ def parse_data(img_dir: str, annot_dir: str, dict_path: str) -> pd.DataFrame:
     return df
 
 
-def create_splits(df: pd.DataFrame, split_sz: float = 0.3):
+def create_splits(df: pd.DataFrame, split_sz: float = 0.3, seed:int=42):
     "Split given DataFrame into `split_sz`"
     # Grab the Unique Image Idxs from the Filename
     unique_ids = list(df.filename.unique())
     # Split the Unique Image Idxs into Train & valid Datasets
     try:
-        train_ids, val_ids = train_test_split(
-            unique_ids,
-            shuffle=True,
-            random_state=42,
-            test_size=split_sz,
-            stratify=df.labels,
-        )
+        train_ids, val_ids = train_test_split(unique_ids, shuffle=True, random_state=seed, test_size=split_sz, stratify=df.labels,)
     except:
-        train_ids, val_ids = train_test_split(
-            unique_ids, shuffle=True, random_state=42, test_size=split_sz,
-        )
+        train_ids, val_ids = train_test_split(unique_ids, shuffle=True, random_state=seed, test_size=split_sz)
     # Create Splits on the DataFrame
     df["split"] = 0
 
@@ -245,8 +237,16 @@ if __name__ == "__main__":
         default=None,
         help="path to the output csv file",
     )
+    parser.add_argument(
+        "--seed",
+        required=False,
+        default=42,
+        help="random seed",
+        type=int,
+    )
 
     args = parser.parse_args()
+    
     if action_choices[0] in argv:
         logger.info("Converting xml files to a csv file")
         df = parse_data(args.img_dir, args.annot_dir, args.labels)
@@ -265,23 +265,19 @@ if __name__ == "__main__":
 
         df = pd.read_csv(args.csv)
         # Create Splits in the DataFrame
-        df_train, df_validation = create_splits(df, split_sz=args.valid_size)
-        df_test, df_validation = create_splits(df, split_sz=args.test_size)
+        # create training & validation splits from the train and validation dataset
+        df_train, df_validation = create_splits(df, split_sz=args.valid_size, seed=args.seed)
+        # create test and validation splits from the validation and test dataset
+        df_test, df_validation = create_splits(df_validation, split_sz=args.test_size, seed=args.seed)
 
-        l_tr, l_val, l_test = (
-            len(df_train.filename.unique()),
-            len(df_validation.filename.unique()),
-            len(df_test.filename.unique()),
-        )
+        l_tr,l_val,l_test = len(df_train.filename.unique()), len(df_validation.filename.unique()),len(df_test.filename.unique())
         logger.info(f"Number of training examples={l_tr}")
         logger.info(f"Number of validation examples={l_val}")
         logger.info(f"Number of test examples={l_test}")
 
         if args.output_dir is not None:
             df_train.to_csv(os.path.join(args.output_dir, "train.csv"), index=False)
-            df_validation.to_csv(
-                os.path.join(args.output_dir, "valid.csv"), index=False
-            )
+            df_validation.to_csv(os.path.join(args.output_dir, "valid.csv"), index=False)
             df_test.to_csv(os.path.join(args.output_dir, "test.csv"), index=False)
             logger.info(f"Files saved to {args.output_dir}")
         else:
