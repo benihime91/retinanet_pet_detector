@@ -13,12 +13,18 @@ The model has been trained on the these following breeds :
 **This project is built on top of :** 
 <div align="center">
   
-* **[PyTorch](https://github.com/pytorch/pytorch)**  
-  <p align="center"><img src=https://github.com/pytorch/pytorch/blob/master/docs/source/_static/img/pytorch-logo-dark.png> </p>
-* **[PyTorchLightning](https://github.com/PyTorchLightning/pytorch-lightning)**  
-  <p align="center"><img src=https://github.com/PyTorchLightning/pytorch-lightning/blob/master/docs/source/_images/logos/lightning_logo.svg> </p>
-* **[Torchvision](https://github.com/pytorch/vision)**
-* **[Albumentations](https://github.com/albumentations-team/albumentations)**
+  **[PyTorch](https://github.com/pytorch/pytorch)**  
+    <p align="center"><img src=https://github.com/pytorch/pytorch/blob/master/docs/source/_static/img/pytorch-logo-dark.png> </p>
+  
+  
+  **[PyTorchLightning](https://github.com/PyTorchLightning/pytorch-lightning)**  
+    <p align="center"><img src=https://github.com/PyTorchLightning/pytorch-lightning/blob/master/docs/source/_images/logos/lightning_logo.svg> </p>
+  
+  
+  **[Torchvision](https://github.com/pytorch/vision)**
+  
+  
+  **[Albumentations](https://github.com/albumentations-team/albumentations)**
 
 </div>
 
