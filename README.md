@@ -131,8 +131,10 @@ Flags:
       --output_dir "/content/retinanet_pet_detector/data/"
   ```
 
-  Run this command to convert training, valiation and test splits. The datasets will be saved in `--output_dir` as  `train.csv`,`valid.csv` and `test.csv`.
-  Set the `--csv` argument to the path to `data-full.csv` generated above.
+  Run this command to convert training, valiation and test splits.  
+  The datasets will be saved in `--output_dir` as  `train.csv`,`valid.csv` and `test.csv`.  
+  Set the `--csv` argument to the path to `data-full.csv` generated above.  
+  You can also set a seed by passing in the `--seed` argument to insure that results reproducibility.
 
   ```bash
   $ python references/data_utils.py \
@@ -141,6 +143,7 @@ Flags:
       --valid_size 0.3 \
       --test_size 0.5 \
       --output_dir "/content/retinanet_pet_detector/data/"
+      --seed 123
   ```
 
 - Training is controlled by the `main.yaml` file. Before training ensures that the paths in `main.yaml` : ( `hparams.train_csv`,`hparams.valid_csv`,`hparams.valid_csv` ) are the correct paths to the files generated above.  
@@ -160,8 +163,9 @@ Flags:
 
 - For inference modify the `config/34.yaml` or `config/resnet50.yaml` file . Set the `url` to be the path where the weights are saved. Example: `checkpoints/weights.pth`.
 
-  `--config` arguments points to the path where the `config/resnet34.yaml` or `config/resnet50.yaml` file is saved.
-  `--image` corresponds to the path of the image. Results are saved as `saved_dir/fname`.
+  * `--config` : corresponds to the path where the `config/resnet34.yaml` or `config/resnet50.yaml` file is saved.
+  * `--image`  : corresponds to the path of the `image`. 
+  * Results are saved as `{save_dir}/{fname}`.
   
   ```bash
   $ python inference.py \
@@ -176,7 +180,7 @@ Flags:
   
   ```bash
   $ python inference.py \
-        --config "config/resnet34.yaml"\
+        --config "/content/retinanet_pet_detector/config/resnet34.yaml" \
         --image "/content/oxford-iiit-pet/images/german_shorthaired_128.jpg" \
         --save_dir "/content/" \
         --fname "res_1.png" \
