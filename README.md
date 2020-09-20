@@ -1,10 +1,15 @@
+<div align="center">
+  
 # Pet Face Detector 👁 🐶 🐱
 
 Using a [RetinaNet](https://github.com/benihime91/pytorch_retinanet) to detect faces of common breeds of Pets.
 .<p align="center"><img src="images/res_3.png"> </p> The model not only detects faces of the pets but also classifies the face breed of the animal.
-Since, the model has been trained on the these following breeds : <p align="center"><img src="images/breed_count.jpg"> </p>  
 
-This project is built on top of : 
+The model has been trained on the these following breeds :  
+
+<p align="center"><img src="images/breed_count.jpg"> </p>  
+
+**This project is built on top of :** 
 * **[PyTorch](https://github.com/pytorch/pytorch)**  
   <p align="center"><img src=https://github.com/pytorch/pytorch/blob/master/docs/source/_static/img/pytorch-logo-dark.png> </p>
 * **[PyTorchLightning](https://github.com/PyTorchLightning/pytorch-lightning)**  
