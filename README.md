@@ -123,15 +123,6 @@ Flags:
   This commmand converts the xml to csv files. Change the `--img_dir` to the path where the dataset images are stored, `--annot_dir` to the path where the xml annotation are stored & `--labels` to where the `label.names` file is stored. `label.names` is stored in `data/labels.names`. The csv file will be saved in `--output_dir` as `data-full.csv`.
   
   ```bash
-  $ python inference.py \
-        --config "config/resnet34.yaml"\
-        --image "/content/oxford-iiit-pet/images/german_shorthaired_128.jpg" \
-        --save_dir "/content/" \
-        --fname "res_1.png" \
-  ```
-  or 
-  
-  ```bash
   $ python references/data_utils.py \
       --action create \
       --img_dir "/content/oxford-iiit-pet/images" \
@@ -167,7 +158,7 @@ Flags:
   ```
   Model weights are automatically saved as `state_dicts()` in the `filepath` specifed in `trainer.model_checkpoint.params.filepath` in `main.yaml` as `weights.pth`
 
-- For inference modify the `config/resnet34.yaml` or `config/resnet50.yaml` file . Set the `url` to be the path where the weights are saved. Example: `checkpoints/weights.pth`.
+- For inference modify the `config/34.yaml` or `config/resnet50.yaml` file . Set the `url` to be the path where the weights are saved. Example: `checkpoints/weights.pth`.
 
   `--config` arguments points to the path where the `config/resnet34.yaml` or `config/resnet50.yaml` file is saved.
   `--image` corresponds to the path of the image. Results are saved as `saved_dir/fname`.
@@ -180,6 +171,15 @@ Flags:
       --iou_thres 0.4 \
       --save_dir "/content/" \
       --fname "res_1.png" \
+  ```
+  or 
+  
+  ```bash
+  $ python inference.py \
+        --config "config/resnet34.yaml"\
+        --image "/content/oxford-iiit-pet/images/german_shorthaired_128.jpg" \
+        --save_dir "/content/" \
+        --fname "res_1.png" \
   ```
 
 - To view tensorboard logs:
@@ -211,6 +211,25 @@ Flags:
   DATALOADER:0 TEST RESULTS
   {'test_mAP': tensor(0.5763, dtype=torch.float64)}
   --------------------------------------------------------------------------------
+  ```
+  
+ - Results for RetinaNet model with resnet50 backbone:  
+
+  ```bash
+  [09/20 12:39:13 references.lightning]: Evaluation results for bbox: 
+  IoU metric: bbox
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.600
+   Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets=100 ] = 0.979
+   Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets=100 ] = 0.604
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+   Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.600
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=  1 ] = 0.606
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 10 ] = 0.619
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets=100 ] = 0.619
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area= small | maxDets=100 ] = -1.000
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets=100 ] = -1.000
+   Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.619
   ```
 
 <img src="images/res_1.png" width="500" height="600"> 
