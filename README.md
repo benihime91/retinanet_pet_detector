@@ -12,17 +12,16 @@ The model has been trained on the these following breeds :
 
 **This project is built on top of :** 
 <div align="center">
+  <p align="center"><img src=https://github.com/pytorch/pytorch/blob/master/docs/source/_static/img/pytorch-logo-dark.png> </p>
   
   **[PyTorch](https://github.com/pytorch/pytorch)**  
-    <p align="center"><img src=https://github.com/pytorch/pytorch/blob/master/docs/source/_static/img/pytorch-logo-dark.png> </p>
   
+  <p align="center"><img src=https://github.com/PyTorchLightning/pytorch-lightning/blob/master/docs/source/_images/logos/lightning_logo.svg> </p>
   
-  **[PyTorchLightning](https://github.com/PyTorchLightning/pytorch-lightning)**  
-    <p align="center"><img src=https://github.com/PyTorchLightning/pytorch-lightning/blob/master/docs/source/_images/logos/lightning_logo.svg> </p>
+  **[PyTorchLightning](https://github.com/PyTorchLightning/pytorch-lightning)** 
   
   
   **[Torchvision](https://github.com/pytorch/vision)**
-  
   
   **[Albumentations](https://github.com/albumentations-team/albumentations)**
 
@@ -46,7 +45,7 @@ For training the models **The Oxford-IIIT Pet Dataset** has been used which can 
 - Install [python3](https://www.python.org/downloads/)
 - Install dependencies
   ```bash
-  $ git clone https://github.com/benihime91/retinanet_pet_detector.git
+  $ git clone --recurse-submodules -j8 https://github.com/benihime91/retinanet_pet_detector.git
   $ cd retinanet_pet_detector
   $ pip install -r requirements.txt
   ```
@@ -57,9 +56,9 @@ For training the models **The Oxford-IIIT Pet Dataset** has been used which can 
 ## Requirements
 
 Python 3.8 or later with all [requirements.txt](https://github.com/ultralytics/yolov5/blob/master/requirements.txt) dependencies installed, including `torch>=1.6`. To install run:
-```bash
-$ pip install -r requirements.txt
-```
+  ```bash
+  $ pip install -r requirements.txt
+  ```
 
 ## Tutorials
 - **Google Colab Notebook** with free GPU: <a href="https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/demo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
