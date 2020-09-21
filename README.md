@@ -20,16 +20,17 @@ The model has been trained on the these following breeds :
   
   **[PyTorchLightning](https://github.com/PyTorchLightning/pytorch-lightning)** 
   
-  
   **[Torchvision](https://github.com/pytorch/vision)**
   
   **[Albumentations](https://github.com/albumentations-team/albumentations)**
+  
+  **[Streamlit](https://github.com/streamlit/streamlit)**
 
 </div>
 
 ## **Dataset used**:
 
-For training the models **The Oxford-IIIT Pet Dataset** has been used which can be found [here](https://www.robots.ox.ac.uk/~vgg/data/pets/).
+For training the models **The Oxford-IIIT Pet Dataset** has been used which can be found [here](https://www.robots.ox.ac.uk/~vgg/data/pets/). Two pretrained models for detections are availabel : (RetinaNet with resnet50 backbone) and (RetinaNet with resnet34 backbone). These pretraned-models can be selected via the .ymal files present in the `config/` dir. 
 
 ## TODO:
 
@@ -37,8 +38,8 @@ For training the models **The Oxford-IIIT Pet Dataset** has been used which can 
 - [x] Finish [Retinanet Project](https://github.com/benihime91/pytorch_retinanet) first.
 - [x] Train the Network.
 - [x] Create WebApp using `StreamLit`.
-- [x] Deploy WebApp . `(Removed due to cost constraints)`
 - [x] Notebooks & Scripts for Train. 
+- [x] Deploy WebApp . `(Removed due to cost constraints)`
 
 ## Usage:
 
@@ -82,7 +83,7 @@ Python 3.8 or later with all [requirements.txt](https://github.com/ultralytics/y
         --fname "res_1.png" \
   ```
 
-Flags:
+**Flags**:
 
 ```bash
  $ python inference.py --help
