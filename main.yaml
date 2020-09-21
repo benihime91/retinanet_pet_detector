@@ -1,9 +1,9 @@
 model:
-  backbone_kind: "resnet34"
+  backbone_kind: "resnet50"
   num_classes: 37
   freeze_bn: True
   min_size: 800
-  max_size: 800
+  max_size: 1600
 
 # hparams are passed to the LightningModule
 hparams:
@@ -34,11 +34,11 @@ hparams:
   # Frequency deterimines the number of times the scheduler shold be called
   # during a single training pass
   scheduler:
-    class_name: torch.optim.lr_scheduler.MultiStepLR
+    class_name: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
     params:
-      milestones: [60, 75]
-      gamma: 0.1
-    interval: "epoch"
+      T_0: 10
+      T_mult: 2
+    interval: "step"
     frequency: 1
 
   # Albumentation Augmentations for train, validation and test datasets
@@ -99,8 +99,8 @@ hparams:
 # trainer.model_chckpoint.filepath as `weights.pt` which is a pytorch state dict
 trainer:
   flags:
+    max_epochs: 100
     check_val_every_n_epoch: 10
-    max_epochs: 80
     precision: 16
     gpus: 1
     num_sanity_val_steps: 0
