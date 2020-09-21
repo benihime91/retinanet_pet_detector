@@ -66,7 +66,7 @@ class DetectionModel(pl.LightningModule):
         # instantiate the transforms
         self.tfms = get_tfms(self.hparams)
         _augs = self.tfms['train'].transforms
-        prompt = [_augs.__class__.__name__ for i in range(len(list(_augs)))]
+        prompt = [_augs[i].__class__.__name__ for i in range(len(list(_augs)))]
         self.fancy_logger.info(f"Augmentations used in training: {prompt}")
         
         # load in the csv files
