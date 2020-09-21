@@ -43,7 +43,7 @@ For training the models **The Oxford-IIIT Pet Dataset** has been used which can 
 
 ## Tutorials
 - **Google Colab Notebook** with free GPU: <a href="https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/demo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
-- **Kaggle Notebook** with free GPU: [https://www.kaggle.com/benihime91/resnet50-backbone](https://www.kaggle.com/benihime91/resnet50-backbone)
+- **Kaggle Notebook** with free GPU: [https://www.kaggle.com/benihime91/demo-nb](https://www.kaggle.com/benihime91/demo-nb)
   
 ## Usage:
 
