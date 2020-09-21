@@ -41,6 +41,10 @@ For training the models **The Oxford-IIIT Pet Dataset** has been used which can 
 - [x] Notebooks & Scripts for Train. 
 - [x] Deploy WebApp . `(Removed due to cost constraints)`
 
+## Tutorials
+- **Google Colab Notebook** with free GPU: <a href=https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/demo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
+- **Kaggle Notebbok** with free GPU : https://www.kaggle.com/benihime91/resnet50-backbone
+  
 ## Usage:
 
 - Install [python3](https://www.python.org/downloads/)
@@ -60,11 +64,7 @@ Python 3.8 or later with all [requirements.txt](https://github.com/ultralytics/y
   ```bash
   $ pip install -r requirements.txt
   ```
-
-## Tutorials
-- **Google Colab Notebook** with free GPU: <a href="https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/demo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
-- **Kaggle Notebbok** with free GPU : https://www.kaggle.com/benihime91/resnet50-backbone
-
+  
 ## Inference with Pre-Trained weights:
   ```bash
   $ python inference.py \
