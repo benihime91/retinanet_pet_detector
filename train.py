@@ -1,19 +1,18 @@
 import argparse
 import datetime
-import logging
 import os
-import warnings
+from typing import Dict, Union
 
 import pytorch_lightning as pl
 import torch
-from omegaconf import OmegaConf
+from omegaconf import OmegaConf, DictConfig
 
 from pytorch_retinanet.retinanet.models import Retinanet
 from references import DetectionModel, initialize_trainer
 from references.data_utils import _get_logger
 
 
-def main(args: argparse.Namespace, seed: int = 123):
+def main(args: Union[argparse.Namespace, DictConfig, Dict], seed: int = 123):
     """
     Fn to initialize the LitniningModul, LightningTrainer
     for train , validation & evaluation.
@@ -32,31 +31,22 @@ def main(args: argparse.Namespace, seed: int = 123):
                      results are reproducible.
     """
     logger = _get_logger(name=__name__)
-
     # set lightning seed to results are reproducible
     pl.seed_everything(seed)
-    logger.name = "Lightning"
     logger.info(f"Random seed = {seed}")
 
     # load the config file
     cfg = OmegaConf.load(args.config)
+    
     # if versbose > 0 : print out the config file arguments
-    if args.verbose > 0:
-        logger.name = "main.yaml"
-        logger.info(f"[Configurations]: \n {OmegaConf.to_yaml(cfg)}")
+    if args.verbose > 0:        logger.info(f"[Configurations]: \n {OmegaConf.to_yaml(cfg)}")
 
-    #  set logger name
-    logger.name = "pytorch_retinanet.retinanet.models" 
     # Instantiate Retinanet model
     model = Retinanet(**cfg.model, logger=logger)
-    # print logs
-    logger.info(f"Image Resize parameters: smallest_image_size={cfg.model.min_size}")
-    logger.info(f"Image Resize parameters: maximum_image_size={cfg.model.max_size}")
+    logger.info(f"Image Resize parameters: smallest_image_size = {cfg.model.min_size}")
+    logger.info(f"Image Resize parameters: maximum_image_size = {cfg.model.max_size}")
 
-    if args.verbose > 0:
-        logger.info(f"Model: \n {model}")
-
-    logger.name = "retinanet_pet_detector"
+    if args.verbose > 0:        logger.info(f"Model: \n {model}")
     
     # Instantiate LightningModel & Trainer
     litModule = DetectionModel(model, cfg.hparams)
@@ -81,27 +71,16 @@ def main(args: argparse.Namespace, seed: int = 123):
     # NB: use_new_zipfile_serialization = True causes problems while loading the model
     torch.save(litModule.model.state_dict(), weights, _use_new_zipfile_serialization=False)
     logger.info("serializing model state dict ...")
-    logger.info(f"Weights saved to {weights} .... ")
-    logger.info("Cleaning up .....")
+    logger.info(f"Model weights saved to {weights} .... ")
     t_end = datetime.datetime.now()
     logger.info(f"Overall time elasped : {strt_time_1 - t_end}")
 
 
 if __name__ == "__main__":
-
+    import warnings
     warnings.filterwarnings("ignore")
-
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--config", required=True, type=str, help="path to the config file"
-    )
-    parser.add_argument(
-        "--verbose",
-        required=False,
-        default=0,
-        help="wether to print out the config and model",
-        type=int,
-    )
-
+    parser.add_argument("--config", required=True, type=str, help="path to the config file")
+    parser.add_argument("--verbose", required=False, default=0, help="wether to print out the config and model",type=int,)
     arguments = parser.parse_args()
     main(args=arguments)

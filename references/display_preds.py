@@ -58,9 +58,6 @@ class Visualizer:
         if isinstance(img, str):
             img = Image.open(img).convert("RGB")
             img = np.array(img)
-        # Get the width and height of the image
-        width = img.shape[1]
-        height = img.shape[0]
 
         # Create a figure and plot the image
         # NB: use smaller size beacuse matplotlib takes long time to render large images
@@ -135,7 +132,6 @@ class Visualizer:
             self.logger.info(f"Results saved to {os.path.join(save_dir, fname)}")
 
         if show:
-            self.logger.info(f"Displaying Results ....")
             plt.show()
 
         if return_fig:

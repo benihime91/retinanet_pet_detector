@@ -166,7 +166,9 @@ def create_splits(df: pd.DataFrame, split_sz: float = 0.3, seed:int=42):
     # Split the DataFrame into Train and Valid DataFrames
     df_trn, df_val = df.loc[df["split"] == "train"], df.loc[df["split"] == "val"]
 
+    # reset the index of the DataFrames
     df_trn, df_val = df_trn.reset_index(drop=True), df_val.reset_index(drop=True)
+
     # drop the extra redundent column
     df_trn.drop(columns=["split"], inplace=True)
     df_val.drop(columns=["split"], inplace=True)
@@ -260,8 +262,8 @@ if __name__ == "__main__":
             logger.info("csv file saved to current directory as `data-full.csv`")
 
     elif action_choices[1] in argv:
-        logger.info(f"path to the given csv file : {args.csv}")
-        logger.info("Creating train, validation and test splits")
+        logger.info(f"Path to the given csv file : {args.csv}")
+        logger.info("Generatind train, validation and test splits")
 
         df = pd.read_csv(args.csv)
         # Create Splits in the DataFrame
@@ -269,11 +271,6 @@ if __name__ == "__main__":
         df_train, df_validation = create_splits(df, split_sz=args.valid_size, seed=args.seed)
         # create test and validation splits from the validation and test dataset
         df_test, df_validation = create_splits(df_validation, split_sz=args.test_size, seed=args.seed)
-
-        l_tr,l_val,l_test = len(df_train.filename.unique()), len(df_validation.filename.unique()),len(df_test.filename.unique())
-        logger.info(f"Number of training examples={l_tr}")
-        logger.info(f"Number of validation examples={l_val}")
-        logger.info(f"Number of test examples={l_test}")
 
         if args.output_dir is not None:
             df_train.to_csv(os.path.join(args.output_dir, "train.csv"), index=False)

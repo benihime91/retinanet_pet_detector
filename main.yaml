@@ -2,13 +2,16 @@ model:
   backbone_kind: "resnet50"
   num_classes: 37
   freeze_bn: True
-  min_size: 800
-  max_size: 1600
+  min_size: 800 # size the smallet height/width of the Image
+  max_size: 1600 # # size the largest height/width of the Image
+  # the Image will be resized such : 
+  # that the smallest side of the image is crooped to `min_size` and 
+  # the largest size to `max_size`
 
 # hparams are passed to the LightningModule
 hparams:
   train_csv: "data/train.csv"
-  train_batch_size: 8
+  train_batch_size: 4
 
   valid_csv: "data/valid.csv"
   valid_batch_size: 32
@@ -18,14 +21,19 @@ hparams:
 
   iou_types: "bbox"
 
+  # pytorch dataloader arguments
+  dataloader:
+    pin_memory: True
+    num_workers: 0
+
   # [Optimizer]:
   # to use different optimzer modify optimzier.class_name to torch.optim.{some optimizer}
   # optimizer arguments are passes under params
   optimizer:
     class_name: torch.optim.SGD
     params:
-      lr: 0.002
-      weight_decay: 0.01
+      lr: 0.001
+      weight_decay: 0.0001
       momentum: 0.9
 
   # [Scheduler]:
@@ -99,7 +107,7 @@ hparams:
 # trainer.model_chckpoint.filepath as `weights.pt` which is a pytorch state dict
 trainer:
   flags:
-    max_epochs: 100
+    max_epochs: 60
     check_val_every_n_epoch: 10
     precision: 16
     gpus: 1
@@ -122,6 +130,7 @@ trainer:
       mode: "max"
       monitor: "valid_mAP"
       save_top_k: 3
+      verbose: False
 
   learning_rate_monitor:
     class_name: pytorch_lightning.callbacks.LearningRateLogger
