@@ -32,7 +32,7 @@ The model has been trained on the these following breeds :
 
 For training the models **The Oxford-IIIT Pet Dataset** has been used which can be found [here](https://www.robots.ox.ac.uk/~vgg/data/pets/). Two pretrained models for detections are availabel : (RetinaNet with resnet50 backbone) and (RetinaNet with resnet34 backbone). These pretraned-models can be selected via the .ymal files present in the `config/` dir. 
 
-## TODO:
+## TO DO:
 
 - [x] Parse the data and convert it to a managable format ex: CSV.
 - [x] Finish [Retinanet Project](https://github.com/benihime91/pytorch_retinanet) first.
