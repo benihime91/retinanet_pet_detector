@@ -158,17 +158,13 @@ class DetectionModel(pl.LightningModule):
 
     def test_epoch_end(self, outputs, *args, **kwargs):
         # coco results
-        self.test_evaluator.accumulate()
         self.fancy_logger.info("Evaluation results: ")
+        self.test_evaluator.accumulate()
         self.test_evaluator.summarize()
         metric = self.test_evaluator.coco_eval["bbox"].stats[0]
         metric = torch.as_tensor(metric)
-        logs = {"test_mAP": metric}
-        return {
-            "test_mAP": metric,
-            "log": logs,
-            "progress_bar": logs,
-        }
+        logs = {"AP": metric}
+        return {"AP": metric, "log": logs, "progress_bar": logs,}
 
 
 class LogCallback(pl.Callback):
@@ -179,7 +175,7 @@ class LogCallback(pl.Callback):
     def on_train_start(self, trainer, pl_module):
         prompt = f"Training on {pl_module.train_dataloader().dataset.__len__()} images"
         pl_module.fancy_logger.info(prompt)
-        prompt = f"Starting training from iteration {trainer.global_step} : "
+        prompt = f"Training from iteration {trainer.global_step} : "
         pl_module.fancy_logger.info(prompt)
 
     def on_test_start(self, trainer, pl_module):
