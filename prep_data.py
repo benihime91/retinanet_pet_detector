@@ -1,13 +1,15 @@
+from references.data_utils import _get_logger
+
+logger = _get_logger(name=__name__)
+
+
 if __name__ == "__main__":
     import argparse
     import os
     from sys import argv
     import warnings
-    from references.data_utils import _get_logger, create_splits, parse_data
+    from references.data_utils import create_splits, parse_data
     import pandas as pd
-
-    # Set up Logging
-    logger = _get_logger(name=__name__)
 
     warnings.filterwarnings("ignore")
 

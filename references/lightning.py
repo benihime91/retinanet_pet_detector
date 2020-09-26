@@ -1,4 +1,3 @@
-from logging import log
 import os
 from typing import Dict, Union
 
@@ -47,10 +46,14 @@ class DetectionModel(pl.LightningModule):
         "instatiates optimizer & scheduler(s)"
         params = [p for p in self.model.parameters() if p.requires_grad]
         # intialize optimizer
-        self.optimizer = load_obj(self.hparams.optimizer.class_name)(params, **self.hparams.optimizer.params)
+        self.optimizer = load_obj(self.hparams.optimizer.class_name)(
+            params, **self.hparams.optimizer.params
+        )
 
         # initialize scheduler
-        self.scheduler = load_obj(self.hparams.scheduler.class_name)(self.optimizer, **self.hparams.scheduler.params)
+        self.scheduler = load_obj(self.hparams.scheduler.class_name)(
+            self.optimizer, **self.hparams.scheduler.params
+        )
         self.scheduler = {
             "scheduler": self.scheduler,
             "interval": self.hparams.scheduler.interval,
@@ -78,16 +81,16 @@ class DetectionModel(pl.LightningModule):
         # load in the csv files
         # train csv
         self.trn_df = pd.read_csv(self.hparams.train_csv)
-        self.fancy_logger.info(f"Serialized train dataset from {self.hparams.train_csv}")
-        self.fancy_logger.info(f"Serialized dataset takes {os.path.getsize(self.hparams.train_csv)/(1024*1024):.2f} MiB")
+        self.fancy_logger.info(f"Loaded train dataset from {self.hparams.train_csv}")
+        self.fancy_logger.info(f"Loaded dataset takes {os.path.getsize(self.hparams.train_csv)/(1024*1024):.2f} MiB")
         # validation csv file
         self.val_df = pd.read_csv(self.hparams.valid_csv)
-        self.fancy_logger.info(f"Serialized validation dataset from {self.hparams.valid_csv}")
-        self.fancy_logger.info(f"Serialized dataset takes {os.path.getsize(self.hparams.valid_csv)/(1024*1024):.2f} MiB")
+        self.fancy_logger.info(f"Loaded validation dataset from {self.hparams.valid_csv}")
+        self.fancy_logger.info(f"Loaded dataset takes {os.path.getsize(self.hparams.valid_csv)/(1024*1024):.2f} MiB")
         # test csv file
         self.test_df = pd.read_csv(self.hparams.test_csv)
-        self.fancy_logger.info(f"Serialized test dataset from {self.hparams.test_csv}")
-        self.fancy_logger.info(f"Serialized dataset takes {os.path.getsize(self.hparams.test_csv)/(1024*1024):.2f} MiB")
+        self.fancy_logger.info(f"Loaded test dataset from {self.hparams.test_csv}")
+        self.fancy_logger.info(f"Loaded dataset takes {os.path.getsize(self.hparams.test_csv)/(1024*1024):.2f} MiB")
 
     # ===================================================== #
     # Forward pass of the Model
@@ -135,9 +138,8 @@ class DetectionModel(pl.LightningModule):
         loss = sum(loss for loss in loss_dict.values())
         result = pl.EvalResult()
         # log metrics for each validation_step, and the average across the epoch, to the progress bar and logger
-        result.log('val_loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
+        result.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
         return result
-
 
     # ===================================================== #
     # Test
@@ -148,9 +150,14 @@ class DetectionModel(pl.LightningModule):
         # instantiate dataloader
         bs = self.hparams.test_batch_size
         loader = DataLoader(test_ds, bs, collate_fn=collate_fn, **self.hparams.dataloader)
+        prompt = "Converting dataset annotations in 'test_dataset' to COCO format ..."
+        self.fancy_logger.info(prompt)
+
         # instantiate coco_api to track metrics
         coco = get_coco_api_from_dataset(loader.dataset)
         self.test_evaluator = CocoEvaluator(coco, [self.hparams.iou_types])
+        prompt = f"Conversion finished, num images: {len(loader)}"
+        self.fancy_logger.info(prompt)
         return loader
 
     def test_step(self, batch, batch_idx, *args, **kwargs):
@@ -163,7 +170,8 @@ class DetectionModel(pl.LightningModule):
 
     def test_epoch_end(self, outputs, *args, **kwargs):
         # coco results
-        self.fancy_logger.info("Evaluation results: ")
+        self.fancy_logger.info("Preparing results for COCO format ...")
+        self.fancy_logger.info("Evaluating predictions ...")
         self.test_evaluator.accumulate()
         self.test_evaluator.summarize()
         metric = self.test_evaluator.coco_eval["bbox"].stats[0]
@@ -182,10 +190,12 @@ class LogCallback(pl.Callback):
         pl_module.fancy_logger.info(prompt)
         prompt = f"Training from iteration {trainer.global_step} : "
         pl_module.fancy_logger.info(prompt)
+        
 
     def on_test_start(self, trainer, pl_module):
-        prompt = f"Inference on {pl_module.test_dataloader().dataset.__len__()} images"
+        prompt = f"Start Inference on {pl_module.test_dataloader().dataset.__len__()} images"
         pl_module.fancy_logger.info(prompt)
+    
 
 
 def initialize_trainer(trainer_conf: Union[DictConfig, Dict], **kwargs) -> pl.Trainer:

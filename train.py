@@ -34,46 +34,34 @@ def main(args: Union[argparse.Namespace, DictConfig, Dict], seed: int = 123):
     # set lightning seed to results are reproducible
     pl.seed_everything(seed)
     logger.info(f"Random seed = {seed}")
-
     # load the config file
     cfg = OmegaConf.load(args.config)
     
     # if versbose > 0 : print out the config file arguments
-    if args.verbose > 0:        logger.info(f"[Configurations]: \n {OmegaConf.to_yaml(cfg)}")
+    if args.verbose > 0:        
+        logger.info(f"[Configurations]: \n {OmegaConf.to_yaml(cfg)}")
 
     # Instantiate Retinanet model
     model = Retinanet(**cfg.model, logger=logger)
     logger.info(f"Image Resize parameters: smallest_image_size = {cfg.model.min_size}")
     logger.info(f"Image Resize parameters: maximum_image_size = {cfg.model.max_size}")
 
-    if args.verbose > 0:        logger.info(f"Model: \n {model}")
+    if args.verbose > 0:        
+        logger.info(f"Model: \n {model}")
     
     # Instantiate LightningModel & Trainer
     litModule = DetectionModel(model, cfg.hparams)
     trainer = initialize_trainer(cfg.trainer, weights_summary=None)
-
     # Train and validation
-    strt_time_1 = datetime.datetime.now()
     trainer.fit(litModule)
-    end_tim = datetime.datetime.now()
-    tot = end_tim - strt_time_1
-    logger.info(f"Total training time:  {tot}")
-
     # Test
-    strt_time = datetime.datetime.now()
     trainer.test(litModule)
-    end_tim = datetime.datetime.now()
-    tot = end_tim - strt_time
-    logger.info(f"Total inference time:  {tot}")
-
     # Save weights
     weights = os.path.join(cfg.trainer.model_checkpoint.params.filepath, "weights.pth")
     # NB: use_new_zipfile_serialization = True causes problems while loading the model
     torch.save(litModule.model.state_dict(), weights, _use_new_zipfile_serialization=False)
-    logger.info("serializing model state dict ...")
-    logger.info(f"Model weights saved to {weights} .... ")
-    t_end = datetime.datetime.now()
-    logger.info(f"Overall time elasped : {strt_time_1 - t_end}")
+    logger.info("Saving model weights ...")
+    print(f"## Model weights saved to {weights}")
 
 
 if __name__ == "__main__":
