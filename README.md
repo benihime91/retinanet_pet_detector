@@ -123,8 +123,8 @@ Python 3.8 or later with all [requirements.txt](https://github.com/ultralytics/y
 - After downloading the dataset . Run the `references/data_utils.py` to convert the xml annotations into csv file and also create train, validation and test splits.
   
   ```bash
-  $ python references/data_utils.py --help
-    usage: data_utils.py [-h] [--action {create,split}] [--img_dir IMG_DIR]
+  $ python prep_data.py --help
+    usage: prep_data.py [-h] [--action {create,split}] [--img_dir IMG_DIR]
                        [--annot_dir ANNOT_DIR] [--labels LABELS] [--csv CSV]
                        [--valid_size VALID_SIZE] [--test_size TEST_SIZE]
                        [--output_dir OUTPUT_DIR] [--seed SEED]
@@ -149,7 +149,7 @@ Python 3.8 or later with all [requirements.txt](https://github.com/ultralytics/y
   This commmand converts the xml to csv files. Change the `--img_dir` to the path where the dataset images are stored, `--annot_dir` to the path where the xml annotation are stored & `--labels` to where the `label.names` file is stored. `label.names` is stored in `data/labels.names`. The csv file will be saved in `--output_dir` as `data-full.csv`.
   
   ```bash
-  $ python references/data_utils.py \
+  $ python prep_data.py.py \
       --action create \
       --img_dir "/content/oxford-iiit-pet/images" \
       --annot_dir "/content/oxford-iiit-pet/annotations/xmls" \
@@ -163,7 +163,7 @@ Python 3.8 or later with all [requirements.txt](https://github.com/ultralytics/y
   You can also set a seed by passing in the `--seed` argument to insure that results reproducibility.
 
   ```bash
-  $ python references/data_utils.py \
+  $ python prep_data.py.py \
       --action split \
       --csv "/content/retinanet_pet_detector/data/data-full.csv"\
       --valid_size 0.3 \
@@ -182,7 +182,7 @@ Python 3.8 or later with all [requirements.txt](https://github.com/ultralytics/y
 - To train run this command. The `--config` argument points to the path to where the `main.yaml` file is saved.
   ```bash
   $ python train.py \
-     --config "/content/retinanet_pet_detector/main.yaml" \
+     --config "/content/retinanet_pet_detector/config/main.yaml" \
      --verbose 0 \
   ```
   Model weights are automatically saved as `state_dicts()` in the `filepath` specifed in `trainer.model_checkpoint.params.filepath` in `main.yaml` as `weights.pth`

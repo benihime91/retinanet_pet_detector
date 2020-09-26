@@ -5,11 +5,16 @@ import pandas as pd
 import pytorch_lightning as pl
 import torch
 from omegaconf import DictConfig
-from pytorch_lightning.callbacks import (EarlyStopping, LearningRateLogger,ModelCheckpoint)
+from pytorch_lightning.callbacks import (
+    EarlyStopping,
+    LearningRateLogger,
+    ModelCheckpoint,
+)
 from torch import nn
 from torch.utils.data import DataLoader
 
-from pytorch_retinanet.references import (CocoEvaluator, DetectionDataset,get_coco_api_from_dataset)
+from pytorch_retinanet.utils import CocoEvaluator, get_coco_api_from_dataset
+from pytorch_retinanet import DetectionDataset
 from pytorch_retinanet.retinanet.utilities import collate_fn
 
 from .data_utils import _get_logger
@@ -42,7 +47,7 @@ class DetectionModel(pl.LightningModule):
         params = [p for p in self.model.parameters() if p.requires_grad]
         # intialize optimizer
         self.optimizer = load_obj(self.hparams.optimizer.class_name)(params, **self.hparams.optimizer.params)
-        
+
         # initialize scheduler
         self.scheduler = load_obj(self.hparams.scheduler.class_name)(self.optimizer, **self.hparams.scheduler.params)
         self.scheduler = {
@@ -52,8 +57,8 @@ class DetectionModel(pl.LightningModule):
         }
 
         # log optimizer and scheduler
-        self.fancy_logger.info(f"Optimizer Loaded : {self.optimizer.__class__.__name__}")
-        self.fancy_logger.info(f"Scheduler Loaded : {self.scheduler['scheduler'].__class__.__name__}")
+        self.fancy_logger.info(f"Optimizer : {self.optimizer.__class__.__name__}")
+        self.fancy_logger.info(f"Scheduler : {self.scheduler['scheduler'].__class__.__name__}")
         return [self.optimizer], [self.scheduler]
 
     # ===================================================== #
@@ -65,20 +70,20 @@ class DetectionModel(pl.LightningModule):
         """
         # instantiate the transforms
         self.tfms = get_tfms(self.hparams)
-        _augs = self.tfms['train'].transforms
+        _augs = self.tfms["train"].transforms
         prompt = [_augs[i].__class__.__name__ for i in range(len(list(_augs)))]
         self.fancy_logger.info(f"Augmentations used in training: {prompt}")
-        
+
         # load in the csv files
         # train csv
         self.trn_df = pd.read_csv(self.hparams.train_csv)
         self.fancy_logger.info(f"Serialized train dataset from {self.hparams.train_csv}")
         self.fancy_logger.info(f"Serialized dataset takes {os.path.getsize(self.hparams.train_csv)/(1024*1024):.2f} MiB")
-        # validation csv
+        # validation csv file
         self.val_df = pd.read_csv(self.hparams.valid_csv)
         self.fancy_logger.info(f"Serialized validation dataset from {self.hparams.valid_csv}")
         self.fancy_logger.info(f"Serialized dataset takes {os.path.getsize(self.hparams.valid_csv)/(1024*1024):.2f} MiB")
-        # test csv
+        # test csv file
         self.test_df = pd.read_csv(self.hparams.test_csv)
         self.fancy_logger.info(f"Serialized test dataset from {self.hparams.test_csv}")
         self.fancy_logger.info(f"Serialized dataset takes {os.path.getsize(self.hparams.test_csv)/(1024*1024):.2f} MiB")
@@ -117,28 +122,17 @@ class DetectionModel(pl.LightningModule):
         val_ds = DetectionDataset(self.val_df, self.tfms["valid"])
         # instantiate dataloader
         bs = self.hparams.valid_batch_size
-        loader = DataLoader(val_ds, bs, collate_fn=collate_fn,**self.hparams.dataloader)
-        # instantiate coco
-        coco = get_coco_api_from_dataset(loader.dataset)
-        self.coco_evaluator = CocoEvaluator(coco, [self.hparams.iou_types])
+        loader = DataLoader(val_ds, bs, collate_fn=collate_fn, **self.hparams.dataloader)
         return loader
 
     def validation_step(self, batch, batch_idx, *args, **kwargs):
-        images, targets, _ = batch
-        targets = [{k: v for k, v in t.items()} for t in targets]
-        outputs = self.model(images, targets)
-        res = {t["image_id"].item(): o for t, o in zip(targets, outputs)}
-        self.coco_evaluator.update(res)
-        return {}
-
-    def validation_epoch_end(self, outputs, *args, **kwargs):
-        self.coco_evaluator.accumulate()
-        self.fancy_logger.info("Evaluation results: ")
-        self.coco_evaluator.summarize()
-        metric = self.coco_evaluator.coco_eval["bbox"].stats[0]
-        metric = torch.as_tensor(metric)
-        logs = {"valid_mAP": metric}
-        return {"valid_mAP": metric,"log": logs,"progress_bar": logs,}
+        images, targets, _ = batch  # unpack the one batch from the DataLoader
+        targets = [{k: v for k, v in t.items()} for t in targets]  # Unpack the Targets
+        # Calculate Losses {regression_loss , classification_loss}
+        loss_dict = self.model(images, targets)
+        # Calculate Total Loss
+        losses = sum(loss for loss in loss_dict.values())
+        return {"valid_loss": losses, "log": loss_dict, "progress_bar": loss_dict}
 
     # ===================================================== #
     # Test
@@ -148,7 +142,7 @@ class DetectionModel(pl.LightningModule):
         test_ds = DetectionDataset(self.test_df, self.tfms["test"])
         # instantiate dataloader
         bs = self.hparams.test_batch_size
-        loader = DataLoader(test_ds, bs, collate_fn=collate_fn,**self.hparams.dataloader)
+        loader = DataLoader(test_ds, bs, collate_fn=collate_fn, **self.hparams.dataloader)
         # instantiate coco_api to track metrics
         coco = get_coco_api_from_dataset(loader.dataset)
         self.test_evaluator = CocoEvaluator(coco, [self.hparams.iou_types])
@@ -157,7 +151,7 @@ class DetectionModel(pl.LightningModule):
     def test_step(self, batch, batch_idx, *args, **kwargs):
         images, targets, _ = batch
         targets = [{k: v for k, v in t.items()} for t in targets]
-        outputs = self.model(images, targets)
+        outputs = self.model.predict(images, targets)
         res = {t["image_id"].item(): o for t, o in zip(targets, outputs)}
         self.test_evaluator.update(res)
         return {}
@@ -170,7 +164,11 @@ class DetectionModel(pl.LightningModule):
         metric = self.test_evaluator.coco_eval["bbox"].stats[0]
         metric = torch.as_tensor(metric)
         logs = {"test_mAP": metric}
-        return {"test_mAP": metric, "log": logs, "progress_bar": logs,}
+        return {
+            "test_mAP": metric,
+            "log": logs,
+            "progress_bar": logs,
+        }
 
 
 class LogCallback(pl.Callback):
@@ -181,18 +179,12 @@ class LogCallback(pl.Callback):
     def on_train_start(self, trainer, pl_module):
         prompt = f"Training on {pl_module.train_dataloader().dataset.__len__()} images"
         pl_module.fancy_logger.info(prompt)
-        pl_module.fancy_logger.info(f"Starting training from iteration {trainer.global_step} : ")
-
-    def on_validation_start(self, trainer, pl_module):
-        prompt = f"Inference on {pl_module.val_dataloader().dataset.__len__()} images"
+        prompt = f"Starting training from iteration {trainer.global_step} : "
         pl_module.fancy_logger.info(prompt)
 
     def on_test_start(self, trainer, pl_module):
-        prompt = (f"Inference on {pl_module.test_dataloader().dataset.__len__()} images")
+        prompt = f"Inference on {pl_module.test_dataloader().dataset.__len__()} images"
         pl_module.fancy_logger.info(prompt)
-
-    def on_test_epoch_end(self, trainer, pl_module):
-        pl_module.fancy_logger.info("Done Evaluating !")
 
 
 def initialize_trainer(trainer_conf: Union[DictConfig, Dict], **kwargs) -> pl.Trainer:
