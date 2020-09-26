@@ -1,3 +1,4 @@
+from logging import log
 import os
 from typing import Dict, Union
 
@@ -133,7 +134,7 @@ class DetectionModel(pl.LightningModule):
         # Calculate Total Loss
         loss = sum(loss for loss in loss_dict.values())
         result = pl.EvalResult()
-        result.log('val_loss', loss)
+        result.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return result
 
 
