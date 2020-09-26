@@ -1,5 +1,5 @@
 model:
-  backbone_kind: "resnet50"
+  backbone_kind: resnet50
   num_classes: 37
   freeze_bn: True
   min_size: 800 # size the smallet height/width of the Image
@@ -10,16 +10,16 @@ model:
 
 # hparams are passed to the LightningModule
 hparams:
-  train_csv: "data/train.csv"
+  train_csv: data/train.csv
   train_batch_size: 4
 
-  valid_csv: "data/valid.csv"
+  valid_csv: data/valid.csv
   valid_batch_size: 4
 
-  test_csv: "data/test.csv"
+  test_csv: data/test.csv
   test_batch_size: 32
 
-  iou_types: "bbox"
+  iou_types: bbox
 
   # pytorch dataloader arguments
   dataloader:
@@ -121,7 +121,7 @@ trainer:
     params:
       mode: "max"
       monitor: "val_loss"
-      patience: 8
+      patience: 15
 
   model_checkpoint:
     class_name: pytorch_lightning.callbacks.ModelCheckpoint

@@ -134,7 +134,8 @@ class DetectionModel(pl.LightningModule):
         # Calculate Total Loss
         loss = sum(loss for loss in loss_dict.values())
         result = pl.EvalResult()
-        result.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        # log metrics for each validation_step, and the average across the epoch, to the progress bar and logger
+        result.log('val_loss', loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
         return result
 
 
