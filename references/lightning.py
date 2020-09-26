@@ -186,12 +186,14 @@ class LogCallback(pl.Callback):
     """
     Callback to handle logging within pl_module
     """
+    def __init__(self, cfg: Union[DictConfig, Dict]) -> None:
+        self.cfg = cfg
 
     def on_fit_start(self, trainer, pl_module):
         trn_bs = pl_module.hparams.train_batch_size
         val_bs = pl_module.hparams.valid_batch_size
         tst_bs = pl_module.hparams.test_batch_size
-        output_dir = pl_module.hparams.model_checkpoint.params.filepath
+        output_dir = self.cfg.model_checkpoint.params.filepath
         pl_module.fancy_logger.info(f"IMS_PER_TRAIN_BATCH : {trn_bs}")
         pl_module.fancy_logger.info(f"IMS_PER_VALIDATION_BATCH : {val_bs}")
         pl_module.fancy_logger.info(f"IMS_PER_TEST_BATCH : {tst_bs}")
@@ -230,7 +232,7 @@ def initialize_trainer(trainer_conf: Union[DictConfig, Dict], **kwargs) -> pl.Tr
     # instantiate callbacks
     lr_logger = LearningRateLogger(**trainer_conf.learning_rate_monitor.params)
     logger = load_obj(trainer_conf.logger.class_name)(**trainer_conf.logger.params)
-    log_cb = LogCallback()
+    log_cb = LogCallback(cfg=trainer_conf)
 
     callbacks = [lr_logger, log_cb]
     logger = [logger]
