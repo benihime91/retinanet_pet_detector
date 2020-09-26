@@ -11,7 +11,7 @@ hparams:
   train_batch_size: 2
 
   valid_csv: data/valid.csv
-  valid_batch_size: 2
+  valid_batch_size: 32
 
   test_csv: data/test.csv
   test_batch_size: 32
