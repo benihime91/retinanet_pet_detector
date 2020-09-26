@@ -8,10 +8,10 @@ model:
 # hparams are passed to the LightningModule
 hparams:
   train_csv: data/train.csv
-  train_batch_size: 4
+  train_batch_size: 2
 
   valid_csv: data/valid.csv
-  valid_batch_size: 4
+  valid_batch_size: 2
 
   test_csv: data/test.csv
   test_batch_size: 32
@@ -104,11 +104,10 @@ hparams:
 # trainer.model_chckpoint.filepath as `weights.pt` which is a pytorch state dict
 trainer:
   flags:
-    max_epochs: 60
+    max_epochs: 50
     check_val_every_n_epoch: 1
-    precision: 16
-    gpus: 1
-    num_sanity_val_steps: 10
+    precision: 32
+    gpus: 0
     terminate_on_nan: True
     benchmark: True
 
@@ -117,7 +116,7 @@ trainer:
     params:
       mode: min
       monitor: val_loss
-      patience: 15
+      patience: 12
 
   model_checkpoint:
     class_name: pytorch_lightning.callbacks.ModelCheckpoint
@@ -125,8 +124,8 @@ trainer:
       filepath: checkpoints/
       mode: min
       monitor: val_loss
-      save_top_k: 3
-      verbose: False
+      save_top_k: 4
+      verbose: True
 
   learning_rate_monitor:
     class_name: pytorch_lightning.callbacks.LearningRateLogger

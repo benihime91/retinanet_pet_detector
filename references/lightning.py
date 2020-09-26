@@ -1,5 +1,6 @@
 import os
 from typing import Dict, Union
+import datetime
 
 import pandas as pd
 import pytorch_lightning as pl
@@ -138,10 +139,9 @@ class DetectionModel(pl.LightningModule):
         loss_dict = self.model(images, targets)
         # Calculate Total Loss
         loss = sum(loss for loss in loss_dict.values())
-        result = pl.EvalResult()
-        # log metrics for each validation_step, and the average across the epoch, to the progress bar and logger
-        result.log("val_loss", loss, on_step=False, on_epoch=True, prog_bar=True, logger=True)
-        return result
+        loss = torch.as_tensor(loss)
+        logs = {"val_loss": loss}
+        return {"val_loss": loss, "log": logs, "progress_bar": logs,}
 
     # ===================================================== #
     # Test
@@ -158,7 +158,7 @@ class DetectionModel(pl.LightningModule):
         # instantiate coco_api to track metrics
         coco = get_coco_api_from_dataset(loader.dataset)
         self.test_evaluator = CocoEvaluator(coco, [self.hparams.iou_types])
-        prompt = f"Conversion finished, num images: {len(loader)}"
+        prompt = f"Conversion finished, num images: {loader.dataset.__len__()}"
         self.fancy_logger.info(prompt)
         return loader
 
@@ -194,22 +194,38 @@ class LogCallback(pl.Callback):
         val_bs = pl_module.hparams.valid_batch_size
         tst_bs = pl_module.hparams.test_batch_size
         output_dir = self.cfg.model_checkpoint.params.filepath
+        eps = self.cfg.flags.max_epochs
+        
         pl_module.fancy_logger.info(f"IMS_PER_TRAIN_BATCH : {trn_bs}")
         pl_module.fancy_logger.info(f"IMS_PER_VALIDATION_BATCH : {val_bs}")
         pl_module.fancy_logger.info(f"IMS_PER_TEST_BATCH : {tst_bs}")
         pl_module.fancy_logger.info(f"CHECKPOINT_DIR : {output_dir}")
+        pl_module.fancy_logger.info(f"MAX_EPOCHS : {eps}")
 
     def on_train_start(self, trainer, pl_module):
+        self.train_start = datetime.datetime.now().replace(microsecond=0)
         prompt = f"Training on {pl_module.train_dataloader().dataset.__len__()} images"
         pl_module.fancy_logger.info(prompt)
         prompt = f"Training from iteration {trainer.global_step} : "
         pl_module.fancy_logger.info(prompt)
-        
 
+    def on_train_end(self, trainer, pl_module):
+        self.train_end = datetime.datetime.now().replace(microsecond=0)
+        prompt = f" Total compute time : {self.train_end - self.train_end}"
+        pl_module.fancy_logger.info(prompt)
+        
     def on_test_start(self, trainer, pl_module):
+        self.test_start = datetime.datetime.now().replace(microsecond=0)
         prompt = f"Start Inference on {pl_module.test_dataloader().dataset.__len__()} images"
         pl_module.fancy_logger.info(prompt)
-    
+
+    def on_test_end(self, trainer, pl_module):
+        self.test_end = datetime.datetime.now().replace(microsecond=0)
+        prompt = f" Total inference time : {self.test_start - self.test_end}"
+        pl_module.fancy_logger.info(prompt)
+
+
+
 
 
 def initialize_trainer(trainer_conf: Union[DictConfig, Dict], **kwargs) -> pl.Trainer:

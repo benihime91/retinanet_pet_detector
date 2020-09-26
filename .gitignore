@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 random.ipynb
+test.ipynb
 
 # C extensions
 *.so

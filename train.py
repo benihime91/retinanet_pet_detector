@@ -1,5 +1,4 @@
 import argparse
-import datetime
 import os
 from typing import Dict, Union
 
@@ -39,12 +38,11 @@ def main(args: Union[argparse.Namespace, DictConfig, Dict], seed: int = 123):
     
     # if versbose > 0 : print out the config file arguments
     if args.verbose > 0:        
-        logger.info(f"[Configurations]: \n {OmegaConf.to_yaml(cfg)}")
+        logger.info(f"Contents of args.config = {args.config}: \n {OmegaConf.to_yaml(cfg)}")
 
     # Instantiate Retinanet model
     model = Retinanet(**cfg.model, logger=logger)
-    logger.info(f"MIN_IMAGE_SIZE : {cfg.model.min_size}")
-    logger.info(f"MAX_IMAGE_SIZE : {cfg.model.max_size}")
+    logger.info(f"INPUT_PARAMS: MIN_IMAGE_SIZE = {cfg.model.min_size}\tMAX_IMAGE_SIZE = {cfg.model.max_size}")
 
     if args.verbose > 0:        
         logger.info(f"Model: \n {model}")
