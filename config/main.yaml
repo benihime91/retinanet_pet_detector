@@ -104,10 +104,10 @@ hparams:
 # trainer.model_chckpoint.filepath as `weights.pt` which is a pytorch state dict
 trainer:
   flags:
+    gpus: 1
     max_epochs: 50
     check_val_every_n_epoch: 1
-    precision: 32
-    gpus: 0
+    precision: 16
     terminate_on_nan: True
     benchmark: True
     num_sanity_val_steps: 0
