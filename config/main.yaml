@@ -110,7 +110,7 @@ trainer:
     gpus: 0
     terminate_on_nan: True
     benchmark: True
-    distributed_backend: dp
+    num_sanity_val_steps: 0
 
   early_stopping:
     class_name: pytorch_lightning.EarlyStopping
