@@ -120,7 +120,7 @@ trainer:
     class_name: pytorch_lightning.EarlyStopping
     params:
       mode: "max"
-      monitor: "valid_mAP"
+      monitor: "valid_loss"
       patience: 12
 
   model_checkpoint:

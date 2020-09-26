@@ -151,7 +151,7 @@ class DetectionModel(pl.LightningModule):
     def test_step(self, batch, batch_idx, *args, **kwargs):
         images, targets, _ = batch
         targets = [{k: v for k, v in t.items()} for t in targets]
-        outputs = self.model.predict(images, targets)
+        outputs = self.model.predict(images)
         res = {t["image_id"].item(): o for t, o in zip(targets, outputs)}
         self.test_evaluator.update(res)
         return {}

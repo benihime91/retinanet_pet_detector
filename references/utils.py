@@ -1,7 +1,6 @@
 import argparse
 import ast
 import importlib
-import os
 from typing import *
 
 import albumentations as A
@@ -11,12 +10,9 @@ import yaml
 from albumentations.pytorch import ToTensorV2
 from omegaconf import DictConfig
 from PIL import Image
-from termcolor import colored
+from pytorch_retinanet.retinanet.models import Retinanet
 from torch import nn
 from torchvision.models.utils import load_state_dict_from_url
-
-from pytorch_retinanet.retinanet.models import Retinanet
-from pytorch_retinanet.retinanet.utilities import ifnone
 
 from .data_utils import _get_logger
 from .display_preds import Visualizer
@@ -151,7 +147,7 @@ def get_preds(model: nn.Module, image: Union[np.array, str], **kwargs) -> Tuple[
     tensor_image = transforms(image=image)["image"]
     # Generate predicitons
     model.eval()
-    pred = model([tensor_image])
+    pred = model.predict([tensor_image])
 
     # Gather the bbox, scores & labels from the preds
     pred_boxes = pred[0]["boxes"]  # Bounding boxes
