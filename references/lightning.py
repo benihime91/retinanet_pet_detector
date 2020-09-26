@@ -131,8 +131,11 @@ class DetectionModel(pl.LightningModule):
         # Calculate Losses {regression_loss , classification_loss}
         loss_dict = self.model(images, targets)
         # Calculate Total Loss
-        losses = sum(loss for loss in loss_dict.values())
-        return {"valid_loss": losses, "log": loss_dict, "progress_bar": loss_dict}
+        loss = sum(loss for loss in loss_dict.values())
+        result = pl.EvalResult()
+        result.log('val_loss', loss)
+        return result
+
 
     # ===================================================== #
     # Test

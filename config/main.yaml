@@ -14,7 +14,7 @@ hparams:
   train_batch_size: 4
 
   valid_csv: "data/valid.csv"
-  valid_batch_size: 32
+  valid_batch_size: 4
 
   test_csv: "data/test.csv"
   test_batch_size: 32
@@ -32,7 +32,7 @@ hparams:
   optimizer:
     class_name: torch.optim.SGD
     params:
-      lr: 0.001
+      lr: 0.002
       weight_decay: 0.0001
       momentum: 0.9
 
@@ -111,7 +111,7 @@ trainer:
     check_val_every_n_epoch: 1
     precision: 16
     gpus: 1
-    num_sanity_val_steps: 2
+    num_sanity_val_steps: 10
     profiler: False
     terminate_on_nan: True
     benchmark: True
@@ -120,15 +120,15 @@ trainer:
     class_name: pytorch_lightning.EarlyStopping
     params:
       mode: "max"
-      monitor: "valid_loss"
-      patience: 12
+      monitor: "val_loss"
+      patience: 8
 
   model_checkpoint:
     class_name: pytorch_lightning.callbacks.ModelCheckpoint
     params:
       filepath: checkpoints/
       mode: "max"
-      monitor: "valid_loss"
+      monitor: "val_loss"
       save_top_k: 3
       verbose: False
 
