@@ -61,8 +61,10 @@ class DetectionModel(pl.LightningModule):
         }
 
         # log optimizer and scheduler
-        self.fancy_logger.info(f"Optimizer : {self.optimizer.__class__.__name__}")
-        self.fancy_logger.info(f"Scheduler : {self.scheduler['scheduler'].__class__.__name__}")
+        self.fancy_logger.info(f"OPTIMIZER_NAME : {self.optimizer.__class__.__name__}")
+        self.fancy_logger.info(f"LEARNING_RATE: {self.hparams.optimizer.params.lr}")
+        self.fancy_logger.info(f"WEIGHT_DECAY: {self.hparams.optimizer.params.weight_decay}")
+        self.fancy_logger.info(f"LR_SCHEDULER_NAME : {self.scheduler['scheduler'].__class__.__name__}")
         return [self.optimizer], [self.scheduler]
 
     # ===================================================== #
@@ -184,6 +186,16 @@ class LogCallback(pl.Callback):
     """
     Callback to handle logging within pl_module
     """
+
+    def on_fit_start(self, trainer, pl_module):
+        trn_bs = pl_module.hparams.train_batch_size
+        val_bs = pl_module.hparams.valid_batch_size
+        tst_bs = pl_module.hparams.test_batch_size
+        output_dir = pl_module.hparams.model_checkpoint.params.filepath
+        pl_module.fancy_logger.info(f"IMS_PER_TRAIN_BATCH : {trn_bs}")
+        pl_module.fancy_logger.info(f"IMS_PER_VALIDATION_BATCH : {val_bs}")
+        pl_module.fancy_logger.info(f"IMS_PER_TEST_BATCH : {tst_bs}")
+        pl_module.fancy_logger.info(f"CHECKPOINT_DIR : {output_dir}")
 
     def on_train_start(self, trainer, pl_module):
         prompt = f"Training on {pl_module.train_dataloader().dataset.__len__()} images"

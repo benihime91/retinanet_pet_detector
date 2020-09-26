@@ -33,7 +33,7 @@ def main(args: Union[argparse.Namespace, DictConfig, Dict], seed: int = 123):
     logger = _get_logger(name=__name__)
     # set lightning seed to results are reproducible
     pl.seed_everything(seed)
-    logger.info(f"Random seed = {seed}")
+    logger.info(f"SEED: {seed}")
     # load the config file
     cfg = OmegaConf.load(args.config)
     
@@ -43,8 +43,8 @@ def main(args: Union[argparse.Namespace, DictConfig, Dict], seed: int = 123):
 
     # Instantiate Retinanet model
     model = Retinanet(**cfg.model, logger=logger)
-    logger.info(f"Image Resize parameters: smallest_image_size = {cfg.model.min_size}")
-    logger.info(f"Image Resize parameters: maximum_image_size = {cfg.model.max_size}")
+    logger.info(f"MIN_IMAGE_SIZE : {cfg.model.min_size}")
+    logger.info(f"MAX_IMAGE_SIZE : {cfg.model.max_size}")
 
     if args.verbose > 0:        
         logger.info(f"Model: \n {model}")
