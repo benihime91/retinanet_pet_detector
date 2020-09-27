@@ -3,7 +3,7 @@ model:
   num_classes: 37
   freeze_bn: True
   min_size: 800
-  max_size: 800
+  max_size: 1600
 
 # hparams are passed to the LightningModule
 hparams:
@@ -126,7 +126,7 @@ trainer:
       mode: min
       monitor: val_loss
       save_top_k: 4
-      verbose: True
+      verbose: false
 
   learning_rate_monitor:
     class_name: pytorch_lightning.callbacks.LearningRateLogger
