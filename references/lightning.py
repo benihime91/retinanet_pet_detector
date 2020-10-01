@@ -211,7 +211,7 @@ class LogCallback(pl.Callback):
 
     def on_train_end(self, trainer, pl_module):
         self.train_end = datetime.datetime.now().replace(microsecond=0)
-        prompt = f" Total compute time : {self.train_end - self.train_end}"
+        prompt = f" Total compute time : {self.train_end - self.train_start}"
         pl_module.fancy_logger.info(prompt)
         
     def on_test_start(self, trainer, pl_module):
@@ -221,7 +221,7 @@ class LogCallback(pl.Callback):
 
     def on_test_end(self, trainer, pl_module):
         self.test_end = datetime.datetime.now().replace(microsecond=0)
-        prompt = f" Total inference time : {self.test_start - self.test_end}"
+        prompt = f" Total inference time : {self.test_end - self.test_start}"
         pl_module.fancy_logger.info(prompt)
 
 
