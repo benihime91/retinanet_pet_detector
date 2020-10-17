@@ -16,7 +16,6 @@ DEVICE = "cpu"
 # Instantiate the visualizer
 viz = Visualizer(label_dict)
 
-
 def load_model(args: argparse.Namespace):
     " loads in the pre-trained RetinaNet Model "
     model = get_model(args)
@@ -74,9 +73,7 @@ def _init_app() -> None:
     )
     st.markdown("**To be more precise the model has been trained on these breeds:**")
     # Show Train data Statistics
-    st.image(
-        Image.open("images/breed_count.jpg"), use_column_width=True,
-    )
+    st.image(Image.open("images/breed_count.jpg"), use_column_width=True,)
 
 
 def main() -> None:
@@ -85,7 +82,6 @@ def main() -> None:
 
     # Load in the Image
     image = load_image()
-
     st.sidebar.markdown("# Set Detection Parameters")
     # select model architecture
     st.sidebar.markdown("**Select Model Architeture:**")
@@ -107,24 +103,16 @@ def main() -> None:
 
     # Set IOU Threshold
     st.sidebar.markdown("**iou threshold for detection bounding boxes**")
-    nms_thres = st.sidebar.slider(
-        label="IOU threshold", min_value=0.1, max_value=1.0, value=0.4,
-    )
+    nms_thres = st.sidebar.slider(label="IOU threshold", min_value=0.1, max_value=1.0, value=0.4,)
 
     # Set maximum detections
-    st.sidebar.markdown(
-        "**Max number of bounding boxes to be detected in the given Image**"
-    )
-    md = st.sidebar.slider(
-        label="max detections", min_value=1, max_value=500, value=100,
-    )
+    st.sidebar.markdown("**Max number of bounding boxes to be detected in the given Image**" )
+    md = st.sidebar.slider(label="max detections", min_value=1, max_value=500, value=100,)
 
     # general usage Info
     st.sidebar.header("General Usage Info:")
     st.sidebar.subheader("**Many bounding boxes generated ?**")
-    st.sidebar.markdown(
-        f"* **try increasing the `score threshold`**\n * **reducing the `IOU threshold`**"
-    )
+    st.sidebar.markdown(f"* **try increasing the `score threshold`**\n * **reducing the `IOU threshold`**")
     st.sidebar.subheader("**Bounding boxes not being detected ?**")
     st.sidebar.markdown(
         f"* **try reducing the `score threshold`**\n * **increasing the `IOU threshold`** \n * **select a different `model architecture` from above given list**"
@@ -132,6 +120,7 @@ def main() -> None:
 
     # If image is Upladed make predictions when button is clicked
     if image is not None:
+        st.info("You can modify the default detection parameters using the left side-bar !")
         if st.button("Generate predictions"):
             # Load the model and set model parameters
             _prompt_ = "Loading model ... It might take some time to download the model if using for the 1st time.."
