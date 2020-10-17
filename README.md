@@ -39,7 +39,7 @@ For training the models **The Oxford-IIIT Pet Dataset** has been used which can 
 - [x] Train the Network.
 - [x] Create WebApp using `StreamLit`.
 - [x] Notebooks & Scripts for Train. 
-- [x] Deploy WebApp . `(Removed due to cost constraints)`
+- [x] Deploy WebApp . Link to the app : https://share.streamlit.io/benihime91/retinanet_pet_detector/app.py
 
 ## Tutorials
 - **Google Colab Notebook** with free GPU: <a href="https://colab.research.google.com/github/benihime91/retinanet_pet_detector/blob/master/demo.ipynb"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
