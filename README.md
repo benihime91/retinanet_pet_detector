@@ -4,6 +4,7 @@
 **Using a [RetinaNet](https://github.com/benihime91/pytorch_retinanet) to detect faces of common breeds of Pets.**
 <p align="center"><img src="images/res_3.png"> </p> 
 <b>The model not only detects faces of the pets but also classifies the face breed of the animal.</b>
+Go to this [link](https://share.streamlit.io/benihime91/retinanet_pet_detector/app.py) to preview the web app !
 </div>
 
 The model has been trained on the these following breeds :  
